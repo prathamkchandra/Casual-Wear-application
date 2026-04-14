@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { dbConnect } from "@/lib/db";
-import Category from "@/models/Category";
 
 export async function PUT(
   request: Request,
@@ -12,13 +10,10 @@ export async function PUT(
   if (!session || (session.user as any)?.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-  await dbConnect();
+  // Database disabled - mock response
   const payload = await request.json();
-  const category = await Category.findOneAndUpdate({ slug: params.slug }, payload, {
-    new: true,
-  });
-  if (!category) return NextResponse.json({ message: "Not found" }, { status: 404 });
-  return NextResponse.json(category);
+  const updated = { _id: Date.now().toString(), ...payload, slug: params.slug };
+  return NextResponse.json(updated);
 }
 
 export async function DELETE(
@@ -29,7 +24,6 @@ export async function DELETE(
   if (!session || (session.user as any)?.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-  await dbConnect();
-  await Category.deleteOne({ slug: params.slug });
+  // Database disabled - mock response
   return NextResponse.json({ message: "Deleted" });
 }

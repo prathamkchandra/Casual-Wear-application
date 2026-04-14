@@ -1,16 +1,50 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { dbConnect } from "@/lib/db";
-import Product from "@/models/Product";
-import Category from "@/models/Category";
+
+// Mock products database for frontend testing
+const mockProducts: Record<string, any> = {
+  "classic-tshirt": {
+    _id: "1",
+    title: "Classic T-Shirt",
+    slug: "classic-tshirt",
+    description: "Comfortable cotton t-shirt",
+    priceInINR: 1499,
+    images: ["https://via.placeholder.com/300x300?text=T-Shirt"],
+    categoryId: "1",
+    sizes: ["XS", "S", "M", "L", "XL"],
+    colors: ["White", "Black", "Navy"],
+  },
+  "denim-jeans": {
+    _id: "2",
+    title: "Denim Jeans",
+    slug: "denim-jeans",
+    description: "Classic blue denim jeans",
+    priceInINR: 2999,
+    images: ["https://via.placeholder.com/300x300?text=Jeans"],
+    categoryId: "2",
+    sizes: ["28", "30", "32", "34", "36"],
+    colors: ["Blue", "Black", "Gray"],
+  },
+  "casual-hoodie": {
+    _id: "3",
+    title: "Casual Hoodie",
+    slug: "casual-hoodie",
+    description: "Warm and cozy hoodie",
+    priceInINR: 2499,
+    images: ["https://via.placeholder.com/300x300?text=Hoodie"],
+    categoryId: "1",
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Gray", "Black", "Navy"],
+  },
+};
 
 export async function GET(
   _request: Request,
   { params }: { params: { slug: string } }
 ) {
-  await dbConnect();
-  const product = await Product.findOne({ slug: params.slug }).lean();
+  // Database disabled - returning mock product
+  const product = mockProducts[params.slug];
   if (!product) return NextResponse.json({ message: "Not found" }, { status: 404 });
   return NextResponse.json(product);
 }
@@ -23,20 +57,10 @@ export async function PUT(
   if (!session || (session.user as any)?.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-  await dbConnect();
+  // Database disabled - mock response
   const payload = await request.json();
-  const category = payload.categorySlug
-    ? await Category.findOne({ slug: payload.categorySlug })
-    : null;
-  const update = {
-    ...payload,
-    ...(category ? { categoryId: category._id } : {}),
-  };
-  const product = await Product.findOneAndUpdate({ slug: params.slug }, update, {
-    new: true,
-  });
-  if (!product) return NextResponse.json({ message: "Not found" }, { status: 404 });
-  return NextResponse.json(product);
+  const updated = { _id: Date.now().toString(), ...payload, slug: params.slug };
+  return NextResponse.json(updated);
 }
 
 export async function DELETE(
@@ -47,7 +71,6 @@ export async function DELETE(
   if (!session || (session.user as any)?.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-  await dbConnect();
-  await Product.deleteOne({ slug: params.slug });
+  // Database disabled - mock response
   return NextResponse.json({ message: "Deleted" });
 }
