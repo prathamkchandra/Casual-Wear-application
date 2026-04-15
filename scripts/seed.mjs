@@ -1,12 +1,83 @@
-import "dotenv/config";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import { dbConnect } from "../src/lib/db";
-import User from "../src/models/User";
-import Category from "../src/models/Category";
-import Product from "../src/models/Product";
+import fs from "fs";
+import path from "path";
+
+// lightweight .env loader for .env.local without external deps
+const envPath = path.resolve(process.cwd(), ".env.local");
+if (fs.existsSync(envPath)) {
+  const text = fs.readFileSync(envPath, "utf8");
+  for (const line of text.split("\n")) {
+    const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
+    if (m) {
+      const key = m[1];
+      let val = m[2];
+      if (val.startsWith('"') && val.endsWith('"')) {
+        val = val.slice(1, -1);
+      }
+      if (process.env[key] === undefined) {
+        process.env[key] = val;
+      }
+    }
+  }
+}
+
+const uri = process.env.MONGODB_URI;
+const dbName = process.env.MONGODB_DB;
+
+if (!uri) {
+  throw new Error("MONGODB_URI is required");
+}
+
+const connect = async () => {
+  await mongoose.connect(uri, {
+    bufferCommands: false,
+    dbName: dbName || undefined,
+  });
+};
+
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    passwordHash: { type: String, required: true },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
+  },
+  { timestamps: { createdAt: true, updatedAt: false } }
+);
+
+const categorySchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    description: String,
+    heroImage: String,
+  },
+  { timestamps: true }
+);
+
+const productSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    description: { type: String, required: true },
+    priceInINR: { type: Number, required: true },
+    sizes: { type: [String], default: [] },
+    colors: { type: [String], default: [] },
+    images: { type: [String], default: [] },
+    categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
+    stock: { type: Number, default: 0 },
+    tags: { type: [String], default: [] },
+  },
+  { timestamps: true }
+);
+
+const User = mongoose.model("User", userSchema);
+const Category = mongoose.model("Category", categorySchema);
+const Product = mongoose.model("Product", productSchema);
 
 async function run() {
-  await dbConnect();
+  await connect();
 
   const adminEmail = "admin@casualwear.dev";
   const demoEmail = "demo@casualwear.dev";
@@ -91,7 +162,7 @@ async function run() {
   ]);
 
   console.log("Seeded users, categories, and products.");
-  process.exit(0);
+  await mongoose.connection.close();
 }
 
 run().catch((err) => {

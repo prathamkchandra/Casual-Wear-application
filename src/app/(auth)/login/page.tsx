@@ -3,12 +3,14 @@
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +21,11 @@ export default function LoginPage() {
       password,
       redirect: false,
     });
-    if (res?.error) setError("Invalid credentials");
+    if (res?.error) {
+      setError("Invalid credentials");
+    } else {
+      router.replace("/");
+    }
     setLoading(false);
   };
 

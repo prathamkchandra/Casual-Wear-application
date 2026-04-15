@@ -1,11 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
-// Test users for frontend development (database disabled)
-const testUsers = [
-  { id: "1", email: "user@test.com", password: "password", name: "Test User", role: "user" },
-  { id: "2", email: "admin@test.com", password: "admin", name: "Admin", role: "admin" },
-];
+import bcrypt from "bcryptjs";
+import { dbConnect } from "./db";
+import User from "@/models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,13 +14,16 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
-        // Test user authentication (database disabled)
-        const user = testUsers.find(
-          (u) => u.email.toLowerCase() === credentials.email.toLowerCase()
-        );
-        if (!user || user.password !== credentials.password) return null;
+
+        await dbConnect();
+        const user = await User.findOne({ email: credentials.email.toLowerCase() });
+        if (!user) return null;
+
+        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
+        if (!isValid) return null;
+
         return {
-          id: user.id,
+          id: user._id.toString(),
           name: user.name,
           email: user.email,
           role: user.role,

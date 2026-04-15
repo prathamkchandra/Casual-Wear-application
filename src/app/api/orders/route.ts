@@ -1,14 +1,23 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { dbConnect } from "@/lib/db";
+import Order from "@/models/Order";
+import Product from "@/models/Product";
+import Cart from "@/models/Cart";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-  // Database disabled - returning empty orders list
-  return NextResponse.json([]);
+
+  await dbConnect();
+  const isAdmin = (session.user as any).role === "admin";
+  const filter = isAdmin ? {} : { userId: session.user.id };
+
+  const orders = await Order.find(filter).sort({ createdAt: -1 }).lean();
+  return NextResponse.json(orders);
 }
 
 export async function POST(request: Request) {
@@ -16,23 +25,43 @@ export async function POST(request: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ message: "Login required" }, { status: 401 });
   }
-  // Database disabled - mock order creation
+
   const body = await request.json();
-  const items = body.items || [];
+  const itemsPayload = (body.items || []) as Array<{
+    productId: string;
+    qty: number;
+    size?: string;
+    color?: string;
+  }>;
 
-  const mockOrder = {
-    _id: Date.now().toString(),
-    userId: session.user.id,
-    items,
-    subtotal: items.reduce((sum: number, item: any) => sum + item.priceInINR * item.qty, 0),
-    status: "pending",
-    createdAt: new Date(),
-  };
+  if (!itemsPayload.length) {
+    return NextResponse.json({ message: "No items to order" }, { status: 400 });
+  }
 
-  return NextResponse.json(mockOrder, { status: 201 });
-}
-    0
-  );
+  await dbConnect();
+
+  const productIds = itemsPayload.map((i) => i.productId);
+  const products = await Product.find({ _id: { $in: productIds } }).lean();
+  const productMap = new Map(products.map((p) => [p._id.toString(), p]));
+
+  const orderItems = [];
+  for (const item of itemsPayload) {
+    const product = productMap.get(item.productId);
+    if (!product) {
+      return NextResponse.json({ message: "Product not found" }, { status: 400 });
+    }
+    orderItems.push({
+      productId: product._id,
+      title: product.title,
+      priceInINR: product.priceInINR,
+      qty: item.qty,
+      size: item.size,
+      color: item.color,
+      image: product.images?.[0],
+    });
+  }
+
+  const subtotal = orderItems.reduce((sum, i) => sum + i.priceInINR * i.qty, 0);
 
   const order = await Order.create({
     userId: session.user.id,
@@ -42,7 +71,6 @@ export async function POST(request: Request) {
     status: "created",
   });
 
-  // Clear server cart
   await Cart.findOneAndUpdate({ userId: session.user.id }, { items: [] });
 
   return NextResponse.json(order, { status: 201 });

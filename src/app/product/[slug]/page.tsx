@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/data";
 import ProductDetailActions from "./product-actions";
@@ -12,13 +13,16 @@ export default async function ProductPage({ params }: { params: { slug: string }
   return (
     <div className="section-shell py-12 grid gap-10 lg:grid-cols-2">
       <div className="relative overflow-hidden rounded-3xl shadow-soft bg-white">
-        <img
+        <Image
           src={
             product.images?.[0] ||
             "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=80"
           }
           alt={product.title}
-          className="h-full w-full object-cover"
+          fill
+          sizes="(min-width:1024px) 50vw, 100vw"
+          className="object-cover"
+          priority
         />
       </div>
       <div className="space-y-6">
