@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import mongoose from "mongoose";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 import Product from "@/models/Product";
@@ -16,7 +17,9 @@ export async function GET(request: Request) {
   if (categoryParam) {
     const category =
       (await Category.findOne({ slug: categoryParam }).lean()) ||
-      (await Category.findById(categoryParam).lean());
+      (mongoose.isValidObjectId(categoryParam)
+        ? await Category.findById(categoryParam).lean()
+        : null);
     if (category) {
       filter.categoryId = category._id;
     }
@@ -43,7 +46,9 @@ export async function POST(request: Request) {
   await dbConnect();
   const category =
     (await Category.findOne({ slug: payload.categorySlug }).lean()) ||
-    (payload.categoryId && (await Category.findById(payload.categoryId).lean()));
+    (payload.categoryId && mongoose.isValidObjectId(payload.categoryId)
+      ? await Category.findById(payload.categoryId).lean()
+      : null);
 
   if (!category) {
     return NextResponse.json({ message: "Category not found" }, { status: 400 });

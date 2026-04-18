@@ -11,7 +11,9 @@ export async function GET() {
   }
 
   await dbConnect();
-  const cart = await Cart.findOne({ userId: session.user.id }).lean<ICart>();
+  const cart = await Cart.findOne({ userId: session.user.id })
+    .select("items")
+    .lean<{ items: ICart["items"] } | null>();
   return NextResponse.json({ items: cart?.items || [] });
 }
 
@@ -30,7 +32,9 @@ export async function POST(request: Request) {
     { userId: session.user.id },
     { $set: { items: incoming } },
     { new: true, upsert: true }
-  ).lean<ICart>();
+  )
+    .select("items")
+    .lean<{ items: ICart["items"] } | null>();
 
   return NextResponse.json({ items: cart?.items || [] });
 }

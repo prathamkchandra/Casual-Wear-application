@@ -1,6 +1,7 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
 export interface IProduct extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   title: string;
   slug: string;
   description: string;
@@ -29,4 +30,7 @@ const ProductSchema = new Schema<IProduct>(
   { timestamps: true }
 );
 
-export default models.Product || model<IProduct>("Product", ProductSchema);
+const ProductModel =
+  (models.Product as mongoose.Model<IProduct>) || model<IProduct>("Product", ProductSchema);
+
+export default ProductModel;

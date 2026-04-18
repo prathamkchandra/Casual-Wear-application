@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { ICategory } from "@/models/Category";
+import { CategoryDTO } from "@/types/shop";
 
-export default function CollectionGrid({ categories }: { categories: ICategory[] }) {
+export default function CollectionGrid({ categories }: { categories: CategoryDTO[] }) {
   return (
     <section className="section-shell py-14">
       <div className="flex items-center justify-between mb-6">

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ProductGrid from "@/components/product/ProductGrid";
 import { getCategories, getProducts } from "@/lib/data";
 
@@ -17,7 +18,9 @@ export default async function ShopPage() {
           Filter by category and price to build your casual rotation.
         </p>
       </div>
-      <ProductGrid products={products} categories={categories} />
+      <Suspense fallback={<p className="text-sm text-ink/60">Loading products...</p>}>
+        <ProductGrid products={products} categories={categories} />
+      </Suspense>
     </main>
   );
 }

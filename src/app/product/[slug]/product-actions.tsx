@@ -24,11 +24,11 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
 
   return (
     <div className="space-y-4">
-      {product.sizes?.length > 0 && (
+      {(product.sizes?.length ?? 0) > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-semibold">Size</p>
           <div className="flex gap-2">
-            {product.sizes.map((s) => (
+            {(product.sizes ?? []).map((s) => (
               <button
                 key={s}
                 onClick={() => setSize(s)}
@@ -45,11 +45,11 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
         </div>
       )}
 
-      {product.colors?.length > 0 && (
+      {(product.colors?.length ?? 0) > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-semibold">Color</p>
           <div className="flex gap-2">
-            {product.colors.map((c) => (
+            {(product.colors ?? []).map((c) => (
               <button
                 key={c}
                 onClick={() => setColor(c)}

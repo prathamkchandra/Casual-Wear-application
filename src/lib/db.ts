@@ -5,6 +5,7 @@ const uri = process.env.MONGODB_URI;
 if (!uri) {
   throw new Error("MONGODB_URI is not set in the environment.");
 }
+const mongoUri: string = uri;
 
 declare global {
   // eslint-disable-next-line no-var
@@ -25,7 +26,7 @@ export async function dbConnect() {
   if (global.mongooseConn.conn) return global.mongooseConn.conn;
 
   if (!global.mongooseConn.promise) {
-    global.mongooseConn.promise = mongoose.connect(uri, {
+    global.mongooseConn.promise = mongoose.connect(mongoUri, {
       bufferCommands: false,
       dbName: process.env.MONGODB_DB || undefined,
     });

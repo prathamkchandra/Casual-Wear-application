@@ -27,29 +27,31 @@ export async function PUT(
   const payload = await request.json();
   await dbConnect();
 
-  let categoryId = payload.categoryId;
+  let categoryId = payload.categoryId as string | undefined;
   if (payload.categorySlug) {
-    const category =
-      (await Category.findOne({ slug: payload.categorySlug }).lean()) ||
-      (payload.categoryId && (await Category.findById(payload.categoryId).lean()));
-    categoryId = category?._id ?? categoryId;
+    const category = await Category.findOne({ slug: payload.categorySlug }).lean();
+    if (!category) {
+      return NextResponse.json({ message: "Category not found" }, { status: 400 });
+    }
+    categoryId = category._id.toString();
   }
+
+  const updateFields: Record<string, unknown> = {};
+  if (payload.title !== undefined) updateFields.title = payload.title;
+  if (payload.description !== undefined) updateFields.description = payload.description;
+  if (payload.priceInINR !== undefined) updateFields.priceInINR = Number(payload.priceInINR);
+  if (payload.sizes !== undefined) updateFields.sizes = payload.sizes;
+  if (payload.colors !== undefined) updateFields.colors = payload.colors;
+  if (payload.images !== undefined) updateFields.images = payload.images;
+  if (payload.stock !== undefined) updateFields.stock = Number(payload.stock);
+  if (payload.tags !== undefined) updateFields.tags = payload.tags;
+  if (payload.slug) updateFields.slug = payload.slug.toLowerCase();
+  if (categoryId) updateFields.categoryId = categoryId;
 
   const updated = await Product.findOneAndUpdate(
     { slug: params.slug },
     {
-      $set: {
-        title: payload.title,
-        description: payload.description,
-        priceInINR: payload.priceInINR,
-        sizes: payload.sizes,
-        colors: payload.colors,
-        images: payload.images,
-        categoryId,
-        stock: payload.stock,
-        tags: payload.tags,
-        slug: payload.slug?.toLowerCase() || params.slug,
-      },
+      $set: updateFields,
     },
     { new: true }
   ).lean();

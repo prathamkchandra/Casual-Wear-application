@@ -11,6 +11,7 @@ export interface IOrderItem {
 }
 
 export interface IOrder extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   items: IOrderItem[];
   subtotal: number;
@@ -43,4 +44,6 @@ const OrderSchema = new Schema<IOrder>(
   { timestamps: { createdAt: true, updatedAt: false } }
 );
 
-export default models.Order || model<IOrder>("Order", OrderSchema);
+const OrderModel = (models.Order as mongoose.Model<IOrder>) || model<IOrder>("Order", OrderSchema);
+
+export default OrderModel;

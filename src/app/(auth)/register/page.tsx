@@ -2,26 +2,55 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"user" | "admin">("user");
+  const [adminKey, setAdminKey] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [isError, setIsError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
-    const res = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-    if (res.ok) setMessage("Registered! You can now log in.");
-    else setMessage("Could not register.");
-    setLoading(false);
+    setIsError(false);
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          role,
+          adminKey: role === "admin" ? adminKey : undefined,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setMessage(
+          role === "admin"
+            ? "Admin account created. Please sign in."
+            : "Customer account created. Please sign in."
+        );
+        setTimeout(() => router.push("/login"), 700);
+      } else {
+        setIsError(true);
+        setMessage(data?.message || "Could not register.");
+      }
+    } catch {
+      setIsError(true);
+      setMessage("Could not reach server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -69,7 +98,32 @@ export default function RegisterPage() {
             className="w-full rounded-lg border border-ink/10 px-3 py-2"
           />
         </div>
-        {message && <p className="text-sm text-accent">{message}</p>}
+        <div className="space-y-1">
+          <label className="text-sm font-semibold">Register as</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value as "user" | "admin")}
+            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+          >
+            <option value="user">Customer</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        {role === "admin" && (
+          <div className="space-y-1">
+            <label className="text-sm font-semibold">Admin registration key</label>
+            <input
+              type="password"
+              required
+              value={adminKey}
+              onChange={(e) => setAdminKey(e.target.value)}
+              className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            />
+          </div>
+        )}
+        {message && (
+          <p className={`text-sm ${isError ? "text-red-600" : "text-accent"}`}>{message}</p>
+        )}
         <button
           type="submit"
           disabled={loading}

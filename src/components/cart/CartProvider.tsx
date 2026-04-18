@@ -89,60 +89,115 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const STORAGE_KEY = "casual-wear-cart";
+const GUEST_STORAGE_KEY = "casual-wear-cart-guest";
+const LEGACY_STORAGE_KEY = "casual-wear-cart";
+
+const readGuestCart = (): CartItem[] => {
+  if (typeof window === "undefined") return [];
+  const raw = localStorage.getItem(GUEST_STORAGE_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as CartItem[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    localStorage.removeItem(GUEST_STORAGE_KEY);
+    return [];
+  }
+};
+
+const writeGuestCart = (items: CartItem[]) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(items));
+};
+
+const mergeItems = (left: CartItem[], right: CartItem[]) => {
+  const map = new Map<string, CartItem>();
+  for (const item of [...left, ...right]) {
+    const key = `${item.productId}|${item.size || ""}|${item.color || ""}`;
+    const existing = map.get(key);
+    if (existing) {
+      map.set(key, { ...existing, qty: existing.qty + item.qty });
+    } else {
+      map.set(key, { ...item });
+    }
+  }
+  return Array.from(map.values());
+};
 
 export default function CartProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const [state, dispatch] = useReducer(reducer, { items: [] });
 
-  const persist = useCallback(
-    (items: CartItem[]) => {
-      dispatch({ type: "SET", payload: items });
-      if (typeof window !== "undefined") {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-      }
-    },
-    [dispatch]
-  );
-
-  // Load from localStorage
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as CartItem[];
-        dispatch({ type: "SET", payload: parsed });
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
+  const setItems = useCallback((items: CartItem[]) => {
+    dispatch({ type: "SET", payload: items });
   }, []);
 
-  // Merge with server on login
+  // Guest cart and auth cart must stay isolated.
   useEffect(() => {
-    if (status !== "authenticated") return;
-    const sync = async () => {
-      try {
-        const res = await fetch("/api/cart", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ items: state.items }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          persist(data.items);
+    if (status === "loading") return;
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+    }
+
+    if (status === "unauthenticated") {
+      setItems(readGuestCart());
+      return;
+    }
+
+    if (status === "authenticated" && session?.user?.id) {
+      const syncUserCart = async () => {
+        try {
+          const guestItems = readGuestCart();
+          const serverRes = await fetch("/api/cart");
+          const serverItems = serverRes.ok ? ((await serverRes.json()).items as CartItem[]) : [];
+          const merged = mergeItems(serverItems || [], guestItems);
+
+          if (guestItems.length > 0 || merged.length !== (serverItems || []).length) {
+            const upsertRes = await fetch("/api/cart", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ items: merged }),
+            });
+            if (upsertRes.ok) {
+              const data = await upsertRes.json();
+              setItems(data.items || []);
+            } else {
+              setItems(serverItems || []);
+            }
+          } else {
+            setItems(serverItems || []);
+          }
+
+          localStorage.removeItem(GUEST_STORAGE_KEY);
+        } catch (err) {
+          console.error("Cart load failed", err);
+          setItems([]);
         }
-      } catch (err) {
-        console.error("Cart sync failed", err);
+      };
+      syncUserCart();
+    }
+  }, [status, session?.user?.id, setItems]);
+
+  const persistCart = useCallback(
+    async (items: CartItem[]) => {
+      if (status === "authenticated" && session?.user?.id) {
+        try {
+          await fetch("/api/cart", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items }),
+          });
+        } catch (err) {
+          console.error("Cart sync failed", err);
+        }
+        return;
       }
-    };
-    sync();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+      writeGuestCart(items);
+    },
+    [status, session?.user?.id]
+  );
 
   const addItem = (item: CartItem) => {
-    dispatch({ type: "ADD", payload: item });
     const next = (() => {
       const existing = state.items.find(
         (i) =>
@@ -157,13 +212,11 @@ export default function CartProvider({ children }: { children: React.ReactNode }
       }
       return [...state.items, item];
     })();
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    }
+    dispatch({ type: "SET", payload: next });
+    void persistCart(next);
   };
 
   const removeItem = (id: string, size?: string, color?: string) => {
-    dispatch({ type: "REMOVE", payload: { productId: id, size, color } });
     const next = state.items.filter(
       (i) =>
         !(
@@ -172,26 +225,22 @@ export default function CartProvider({ children }: { children: React.ReactNode }
           i.color === color
         )
     );
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    }
+    dispatch({ type: "SET", payload: next });
+    void persistCart(next);
   };
 
   const updateQty = (id: string, qty: number, size?: string, color?: string) => {
-    dispatch({ type: "UPDATE_QTY", payload: { productId: id, qty, size, color } });
     const next = state.items.map((i) =>
       i.productId === id && i.size === size && i.color === color ? { ...i, qty } : i
     );
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    }
+    dispatch({ type: "SET", payload: next });
+    void persistCart(next);
   };
 
   const clear = () => {
     dispatch({ type: "CLEAR" });
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    void persistCart([]);
+    if (status !== "authenticated") localStorage.removeItem(GUEST_STORAGE_KEY);
   };
 
   const total = state.items.reduce(

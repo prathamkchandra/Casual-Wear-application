@@ -5,8 +5,11 @@ import AdminClient from "./admin-client";
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user as any)?.role !== "admin") {
+  if (!session) {
     redirect("/login");
+  }
+  if ((session.user as any)?.role !== "admin") {
+    redirect("/");
   }
   return <AdminClient />;
 }

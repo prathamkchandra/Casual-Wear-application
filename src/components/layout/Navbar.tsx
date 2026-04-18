@@ -6,10 +6,9 @@ import { signOut, useSession } from "next-auth/react";
 import { useCart } from "@/components/cart/CartProvider";
 import React from "react";
 
-const links = [
+const publicLinks = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
-  { href: "/cart", label: "Cart" },
 ];
 
 export default function Navbar() {
@@ -17,6 +16,13 @@ export default function Navbar() {
   const { data: session } = useSession();
   const { items } = useCart();
   const count = items.reduce((sum, item) => sum + item.qty, 0);
+  const role = (session?.user as any)?.role;
+
+  const links = role === "admin"
+    ? [...publicLinks, { href: "/admin", label: "Admin" }]
+    : session
+      ? [...publicLinks, { href: "/cart", label: "Cart" }, { href: "/orders", label: "Orders" }]
+      : [...publicLinks, { href: "/cart", label: "Cart" }];
 
   return (
     <header className="sticky top-0 z-20 bg-sand/90 backdrop-blur border-b border-black/5">
@@ -43,11 +49,6 @@ export default function Navbar() {
           ))}
           {session ? (
             <>
-              {(session.user as any)?.role === "admin" && (
-                <Link href="/admin" className="hover:text-accent text-ink/80">
-                  Admin
-                </Link>
-              )}
               <button
                 onClick={() => signOut()}
                 className="rounded-full border border-ink/10 px-3 py-1 hover:border-accent hover:text-accent"

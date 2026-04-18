@@ -8,6 +8,7 @@ export interface ICartItem {
 }
 
 export interface ICart extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   items: ICartItem[];
   updatedAt: Date;
@@ -31,4 +32,6 @@ const CartSchema = new Schema<ICart>(
   { timestamps: { createdAt: false, updatedAt: true } }
 );
 
-export default models.Cart || model<ICart>("Cart", CartSchema);
+const CartModel = (models.Cart as mongoose.Model<ICart>) || model<ICart>("Cart", CartSchema);
+
+export default CartModel;

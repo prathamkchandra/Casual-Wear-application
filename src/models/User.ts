@@ -3,6 +3,7 @@ import mongoose, { Schema, models, model } from "mongoose";
 export type UserRole = "user" | "admin";
 
 export interface IUser extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   name: string;
   email: string;
   passwordHash: string;
@@ -20,4 +21,6 @@ const UserSchema = new Schema<IUser>(
   { timestamps: { createdAt: true, updatedAt: false } }
 );
 
-export default models.User || model<IUser>("User", UserSchema);
+const UserModel = (models.User as mongoose.Model<IUser>) || model<IUser>("User", UserSchema);
+
+export default UserModel;

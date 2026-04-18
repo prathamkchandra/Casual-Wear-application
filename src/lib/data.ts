@@ -1,32 +1,80 @@
-import { LeanDocument } from "mongoose";
 import { dbConnect } from "./db";
-import Product, { IProduct } from "@/models/Product";
-import Category, { ICategory } from "@/models/Category";
+import mongoose from "mongoose";
+import Product from "@/models/Product";
+import Category from "@/models/Category";
+import { CategoryDTO, ProductDTO } from "@/types/shop";
 
-type ProductPlain = LeanDocument<IProduct> & { _id: string };
-type CategoryPlain = LeanDocument<ICategory> & { _id: string };
+type ProductLean = {
+  _id: mongoose.Types.ObjectId;
+  title: string;
+  slug: string;
+  description: string;
+  priceInINR: number;
+  sizes?: string[];
+  colors?: string[];
+  images?: string[];
+  categoryId?: mongoose.Types.ObjectId;
+  stock?: number;
+  tags?: string[];
+};
 
-const toPlain = <T extends { _id: any }>(doc: T) => ({
-  ...doc,
-  _id: doc._id.toString(),
-});
+type CategoryLean = {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  slug: string;
+  description?: string;
+  heroImage?: string;
+};
 
-export async function getProducts(limit?: number): Promise<ProductPlain[]> {
+export async function getProducts(limit?: number): Promise<ProductDTO[]> {
   await dbConnect();
   const query = Product.find().sort({ createdAt: -1 }).lean();
   if (limit) query.limit(limit);
-  const products = await query.exec();
-  return products.map(toPlain);
+  const products = (await query.exec()) as ProductLean[];
+  return products.map((product) => ({
+    _id: product._id.toString(),
+    title: product.title,
+    slug: product.slug,
+    description: product.description,
+    priceInINR: product.priceInINR,
+    sizes: product.sizes ?? [],
+    colors: product.colors ?? [],
+    images: product.images ?? [],
+    categoryId: product.categoryId?.toString(),
+    stock: product.stock ?? 0,
+    tags: product.tags ?? [],
+  }));
 }
 
-export async function getProductBySlug(slug: string): Promise<ProductPlain | null> {
+export async function getProductBySlug(slug: string): Promise<ProductDTO | null> {
   await dbConnect();
-  const product = await Product.findOne({ slug }).lean();
-  return product ? toPlain(product) : null;
+  const product = (await Product.findOne({ slug }).lean()) as ProductLean | null;
+  if (!product) return null;
+  return {
+    _id: product._id.toString(),
+    title: product.title,
+    slug: product.slug,
+    description: product.description,
+    priceInINR: product.priceInINR,
+    sizes: product.sizes ?? [],
+    colors: product.colors ?? [],
+    images: product.images ?? [],
+    categoryId: product.categoryId?.toString(),
+    stock: product.stock ?? 0,
+    tags: product.tags ?? [],
+  };
 }
 
-export async function getCategories(): Promise<CategoryPlain[]> {
+export async function getCategories(): Promise<CategoryDTO[]> {
   await dbConnect();
-  const categories = await Category.find().sort({ name: 1 }).lean();
-  return categories.map(toPlain);
+  const categories = (await Category.find()
+    .sort({ name: 1 })
+    .lean()) as CategoryLean[];
+  return categories.map((category) => ({
+    _id: category._id.toString(),
+    name: category.name,
+    slug: category.slug,
+    description: category.description,
+    heroImage: category.heroImage,
+  }));
 }

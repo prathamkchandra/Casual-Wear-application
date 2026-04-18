@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import mongoose from "mongoose";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
 import Order from "@/models/Order";
@@ -41,7 +42,16 @@ export async function POST(request: Request) {
   await dbConnect();
 
   const productIds = itemsPayload.map((i) => i.productId);
-  const products = await Product.find({ _id: { $in: productIds } }).lean();
+  const products = await Product.find({ _id: { $in: productIds } })
+    .select("_id title priceInINR images")
+    .lean<
+      Array<{
+        _id: mongoose.Types.ObjectId;
+        title: string;
+        priceInINR: number;
+        images?: string[];
+      }>
+    >();
   const productMap = new Map(products.map((p) => [p._id.toString(), p]));
 
   const orderItems = [];

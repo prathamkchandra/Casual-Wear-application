@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "@/components/cart/CartProvider";
 import { useSession, signIn } from "next-auth/react";
 
@@ -58,14 +59,16 @@ export default function CartPageClient() {
                 key={`${item.productId}-${item.size}-${item.color}`}
                 className="rounded-2xl bg-white p-4 shadow-soft flex gap-4"
               >
-                <div className="h-24 w-24 overflow-hidden rounded-xl bg-sand">
-                  <img
+                <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-sand">
+                  <Image
                     src={
                       item.image ||
                       "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80"
                     }
                     alt={item.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="96px"
+                    className="object-cover"
                   />
                 </div>
                 <div className="flex-1">
