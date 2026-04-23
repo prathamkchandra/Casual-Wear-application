@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import mongoose from "mongoose";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
+import { normalizeSlug } from "@/lib/slug";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
 
@@ -42,6 +43,10 @@ export async function POST(request: Request) {
   if (!payload.title || !payload.slug || !payload.priceInINR) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
   }
+  const normalizedSlug = normalizeSlug(String(payload.slug));
+  if (!normalizedSlug) {
+    return NextResponse.json({ message: "Invalid product slug" }, { status: 400 });
+  }
 
   await dbConnect();
   const category =
@@ -56,7 +61,7 @@ export async function POST(request: Request) {
 
   const product = await Product.create({
     title: payload.title,
-    slug: payload.slug.toLowerCase(),
+    slug: normalizedSlug,
     description: payload.description,
     priceInINR: Number(payload.priceInINR),
     sizes: payload.sizes || [],

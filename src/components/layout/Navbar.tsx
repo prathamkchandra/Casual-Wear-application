@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useCart } from "@/components/cart/CartProvider";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const publicLinks = [
   { href: "/", label: "Home" },
@@ -17,6 +17,7 @@ export default function Navbar() {
   const { items } = useCart();
   const count = items.reduce((sum, item) => sum + item.qty, 0);
   const role = (session?.user as any)?.role;
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const links = role === "admin"
     ? [...publicLinks, { href: "/admin", label: "Admin" }]
@@ -24,13 +25,17 @@ export default function Navbar() {
       ? [...publicLinks, { href: "/cart", label: "Cart" }, { href: "/orders", label: "Orders" }]
       : [...publicLinks, { href: "/cart", label: "Cart" }];
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   return (
     <header className="sticky top-0 z-20 bg-sand/90 backdrop-blur border-b border-black/5">
-      <div className="container mx-auto max-w-6xl flex items-center justify-between py-4 px-4">
+      <div className="section-shell flex items-center justify-between py-3 md:py-4">
         <Link href="/" className="text-xl font-semibold tracking-tight">
           casual<span className="text-accent">.wear</span>
         </Link>
-        <nav className="flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -47,6 +52,27 @@ export default function Navbar() {
               )}
             </Link>
           ))}
+          <Link
+            href="/shop"
+            aria-label="Search products"
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-black/10 text-ink/80 transition-colors ${
+              pathname === "/shop" ? "text-accent" : "text-ink/80"
+            } hover:text-accent`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="6.5" />
+              <path d="M16 16l4 4" />
+            </svg>
+          </Link>
           {session ? (
             <>
               <button
@@ -65,7 +91,95 @@ export default function Navbar() {
             </Link>
           )}
         </nav>
+
+        <div className="flex items-center gap-2 md:hidden">
+          <Link
+            href="/shop"
+            aria-label="Search products"
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-black/10 text-ink/80 transition-colors ${
+              pathname === "/shop" ? "text-accent" : "text-ink/80"
+            } hover:text-accent`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="6.5" />
+              <path d="M16 16l4 4" />
+            </svg>
+          </Link>
+          <button
+            type="button"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMobileOpen((v) => !v)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-black/10 text-ink/80 hover:text-accent"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {mobileOpen ? (
+                <>
+                  <path d="M6 6l12 12" />
+                  <path d="M18 6l-12 12" />
+                </>
+              ) : (
+                <>
+                  <path d="M4 7h16" />
+                  <path d="M4 12h16" />
+                  <path d="M4 17h16" />
+                </>
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
+
+      {mobileOpen && (
+        <div className="md:hidden border-t border-black/5 bg-sand px-4 py-3">
+          <nav className="flex flex-col gap-2 text-sm font-medium">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`rounded-xl px-3 py-2 ${
+                  pathname === link.href ? "bg-accent/10 text-accent" : "text-ink/80"
+                } hover:text-accent`}
+              >
+                {link.label}
+                {link.href === "/cart" && count > 0 ? ` (${count})` : ""}
+              </Link>
+            ))}
+            {session ? (
+              <button
+                onClick={() => signOut()}
+                className="rounded-xl border border-ink/10 px-3 py-2 text-left hover:border-accent hover:text-accent"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="rounded-xl border border-ink/10 px-3 py-2 hover:border-accent hover:text-accent"
+              >
+                Login
+              </Link>
+            )}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

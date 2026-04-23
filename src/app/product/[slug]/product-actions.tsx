@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { ProductDTO } from "@/types/shop";
 import { useCart } from "@/components/cart/CartProvider";
+import { DEFAULT_PRODUCT_IMAGE, getSafeProductImage } from "@/lib/image";
 
 export default function ProductDetailActions({ product }: { product: ProductDTO }) {
   const { addItem } = useCart();
@@ -15,7 +16,7 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
       productId: product._id,
       name: product.title,
       priceInINR: product.priceInINR,
-      image: product.images?.[0],
+      image: getSafeProductImage(product.images?.[0], DEFAULT_PRODUCT_IMAGE),
       size,
       color,
       qty,

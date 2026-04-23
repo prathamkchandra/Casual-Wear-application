@@ -6,6 +6,7 @@ import { dbConnect } from "@/lib/db";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import Cart from "@/models/Cart";
+import { DEFAULT_PRODUCT_IMAGE, getSafeProductImage } from "@/lib/image";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
       qty: item.qty,
       size: item.size,
       color: item.color,
-      image: product.images?.[0],
+      image: getSafeProductImage(product.images?.[0], DEFAULT_PRODUCT_IMAGE),
     });
   }
 

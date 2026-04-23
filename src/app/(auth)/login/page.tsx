@@ -39,10 +39,10 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="section-shell py-16 grid gap-10 lg:grid-cols-2 lg:items-center">
+    <main className="section-shell py-10 sm:py-16 grid gap-8 lg:gap-10 lg:grid-cols-2 lg:items-center">
       <div className="space-y-4">
         <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Welcome back</p>
-        <h1 className="text-3xl font-semibold">Sign in to continue</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold">Sign in to continue</h1>
         <p className="text-ink/70">
           Save your cart, place orders, and access admin tools if you&apos;re on the team.
         </p>
@@ -50,10 +50,7 @@ export default function LoginPage() {
           Need an account? Register
         </Link>
       </div>
-      <form
-        onSubmit={handleSubmit}
-        className="rounded-2xl bg-white shadow-soft p-6 space-y-4"
-      >
+      <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-soft p-5 sm:p-6 space-y-4">
         <div className="space-y-1">
           <label className="text-sm font-semibold">Email</label>
           <input

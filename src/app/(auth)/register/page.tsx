@@ -54,10 +54,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="section-shell py-16 grid gap-10 lg:grid-cols-2 lg:items-center">
+    <main className="section-shell py-10 sm:py-16 grid gap-8 lg:gap-10 lg:grid-cols-2 lg:items-center">
       <div className="space-y-4">
         <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Create account</p>
-        <h1 className="text-3xl font-semibold">Join the crew</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold">Join the crew</h1>
         <p className="text-ink/70">
           Keep your cart synced and see your order history by creating an account.
         </p>
@@ -65,10 +65,7 @@ export default function RegisterPage() {
           Already have one? Login
         </Link>
       </div>
-      <form
-        onSubmit={handleSubmit}
-        className="rounded-2xl bg-white shadow-soft p-6 space-y-4"
-      >
+      <form onSubmit={handleSubmit} className="rounded-2xl bg-white shadow-soft p-5 sm:p-6 space-y-4">
         <div className="space-y-1">
           <label className="text-sm font-semibold">Name</label>
           <input

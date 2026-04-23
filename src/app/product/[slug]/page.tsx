@@ -1,6 +1,7 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/data";
+import { DEFAULT_PRODUCT_IMAGE, getSafeProductImage } from "@/lib/image";
 import ProductDetailActions from "./product-actions";
 
 export const revalidate = 60;
@@ -11,13 +12,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const plainProduct = JSON.parse(JSON.stringify(product));
 
   return (
-    <div className="section-shell py-12 grid gap-10 lg:grid-cols-2">
-      <div className="relative overflow-hidden rounded-3xl shadow-soft bg-white">
+    <div className="section-shell py-10 sm:py-12 grid gap-8 lg:gap-10 lg:grid-cols-2">
+      <div className="relative aspect-[4/5] min-h-[320px] sm:min-h-[420px] lg:min-h-[560px] overflow-hidden rounded-3xl shadow-soft bg-white">
         <Image
-          src={
-            product.images?.[0] ||
-            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=80"
-          }
+          src={getSafeProductImage(product.images?.[0], DEFAULT_PRODUCT_IMAGE)}
           alt={product.title}
           fill
           sizes="(min-width:1024px) 50vw, 100vw"
@@ -28,10 +26,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
       <div className="space-y-6">
         <div className="space-y-2">
           <p className="text-sm text-ink/60">New arrival</p>
-          <h1 className="text-3xl font-semibold">{product.title}</h1>
-          <p className="text-lg text-ink/70">{product.description}</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{product.title}</h1>
+          <p className="text-base sm:text-lg text-ink/70">{product.description}</p>
         </div>
-        <div className="text-3xl font-semibold">₹{product.priceInINR.toLocaleString("en-IN")}</div>
+        <div className="text-2xl sm:text-3xl font-semibold">Rs {product.priceInINR.toLocaleString("en-IN")}</div>
         <ProductDetailActions product={plainProduct} />
         <div className="space-y-2 text-sm text-ink/70">
           <p>Fabric: breathable cotton blend</p>
@@ -42,3 +40,4 @@ export default async function ProductPage({ params }: { params: { slug: string }
     </div>
   );
 }
+

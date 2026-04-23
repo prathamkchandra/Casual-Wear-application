@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
+import { decodeSlugParam, normalizeSlug } from "@/lib/slug";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
 
@@ -10,7 +11,12 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   await dbConnect();
-  const product = await Product.findOne({ slug: params.slug }).lean();
+  const decodedSlug = decodeSlugParam(params.slug);
+  const normalizedSlug = normalizeSlug(decodedSlug);
+  const product =
+    (await Product.findOne({ slug: normalizedSlug }).lean()) ||
+    (await Product.findOne({ slug: decodedSlug }).lean()) ||
+    (await Product.findOne({ slug: decodedSlug.toLowerCase() }).lean());
   if (!product) return NextResponse.json({ message: "Not found" }, { status: 404 });
   return NextResponse.json(product);
 }
@@ -26,6 +32,8 @@ export async function PUT(
 
   const payload = await request.json();
   await dbConnect();
+  const decodedSlug = decodeSlugParam(params.slug);
+  const normalizedParamSlug = normalizeSlug(decodedSlug);
 
   let categoryId = payload.categoryId as string | undefined;
   if (payload.categorySlug) {
@@ -45,11 +53,17 @@ export async function PUT(
   if (payload.images !== undefined) updateFields.images = payload.images;
   if (payload.stock !== undefined) updateFields.stock = Number(payload.stock);
   if (payload.tags !== undefined) updateFields.tags = payload.tags;
-  if (payload.slug) updateFields.slug = payload.slug.toLowerCase();
+  if (payload.slug !== undefined) {
+    const normalizedPayloadSlug = normalizeSlug(String(payload.slug));
+    if (!normalizedPayloadSlug) {
+      return NextResponse.json({ message: "Invalid product slug" }, { status: 400 });
+    }
+    updateFields.slug = normalizedPayloadSlug;
+  }
   if (categoryId) updateFields.categoryId = categoryId;
 
   const updated = await Product.findOneAndUpdate(
-    { slug: params.slug },
+    { slug: { $in: [normalizedParamSlug, decodedSlug, decodedSlug.toLowerCase()] } },
     {
       $set: updateFields,
     },
@@ -70,7 +84,11 @@ export async function DELETE(
   }
 
   await dbConnect();
-  const res = await Product.findOneAndDelete({ slug: params.slug });
+  const decodedSlug = decodeSlugParam(params.slug);
+  const normalizedParamSlug = normalizeSlug(decodedSlug);
+  const res = await Product.findOneAndDelete({
+    slug: { $in: [normalizedParamSlug, decodedSlug, decodedSlug.toLowerCase()] },
+  });
   if (!res) return NextResponse.json({ message: "Not found" }, { status: 404 });
   return NextResponse.json({ message: "Deleted" });
 }

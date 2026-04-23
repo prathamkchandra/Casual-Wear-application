@@ -1,24 +1,28 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/cart/CartProvider";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { DEFAULT_PRODUCT_IMAGE, getSafeProductImage } from "@/lib/image";
 
 export default function CartPageClient() {
   const { items, total, updateQty, removeItem, clear } = useCart();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [placing, setPlacing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [messageType, setMessageType] = useState<"success" | "error" | null>(null);
 
   const placeOrder = async () => {
     if (!session) {
-      signIn();
+      setMessage("Please login to place order.");
+      setMessageType("error");
       return;
     }
     setPlacing(true);
     setMessage(null);
+    setMessageType(null);
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -27,56 +31,69 @@ export default function CartPageClient() {
       });
       if (res.ok) {
         clear();
-        setMessage("Order placed! (demo only).");
+        setMessage("Your order has been placed.");
+        setMessageType("success");
       } else {
         setMessage("Could not place order.");
+        setMessageType("error");
       }
-    } catch (err) {
+    } catch {
       setMessage("Something went wrong.");
+      setMessageType("error");
     } finally {
       setPlacing(false);
     }
   };
 
   return (
-    <main className="section-shell py-12 space-y-8">
+    <main className="section-shell py-10 sm:py-12 space-y-8">
       <div className="space-y-2">
         <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Cart</p>
-        <h1 className="text-3xl font-semibold">Your picks</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold">Your picks</h1>
       </div>
+      {message && (
+        <p
+          className={`rounded-xl border px-4 py-3 text-sm ${
+            messageType === "success"
+              ? "border-green-200 bg-green-50 text-green-700"
+              : "border-red-200 bg-red-50 text-red-700"
+          }`}
+        >
+          {message}
+        </p>
+      )}
       {items.length === 0 ? (
-        <div className="rounded-2xl bg-white p-8 text-center shadow-soft">
+        <div className="rounded-2xl bg-white p-6 sm:p-8 text-center shadow-soft">
           <p className="text-ink/70">Your cart is empty.</p>
           <Link href="/shop" className="mt-4 inline-block rounded-full bg-ink px-4 py-2 text-white">
             Shop products
           </Link>
         </div>
       ) : (
-        <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-[1.5fr_1fr]">
           <div className="space-y-4">
             {items.map((item) => (
               <div
                 key={`${item.productId}-${item.size}-${item.color}`}
-                className="rounded-2xl bg-white p-4 shadow-soft flex gap-4"
+                className="rounded-2xl bg-white p-4 shadow-soft flex flex-col gap-4 sm:flex-row"
               >
-                <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-sand">
+                <div className="relative h-24 w-full sm:w-24 sm:min-w-24 overflow-hidden rounded-xl bg-sand">
                   <Image
-                    src={
-                      item.image ||
-                      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80"
-                    }
+                    src={getSafeProductImage(item.image, DEFAULT_PRODUCT_IMAGE)}
                     alt={item.name}
                     fill
-                    sizes="96px"
+                    sizes="(max-width:639px) 100vw, 96px"
                     className="object-cover"
                   />
                 </div>
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <div>
-                      <h3 className="font-semibold">{item.name}</h3>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="font-semibold line-clamp-2">{item.name}</h3>
                       <p className="text-sm text-ink/60">
-                        {item.size && `Size ${item.size}`} {item.color && `· ${item.color}`}
+                        {item.size && `Size ${item.size}`}
+                        {item.size && item.color ? " | " : ""}
+                        {item.color && item.color}
                       </p>
                     </div>
                     <button
@@ -86,7 +103,7 @@ export default function CartPageClient() {
                       Remove
                     </button>
                   </div>
-                  <div className="mt-3 flex items-center justify-between">
+                  <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-3">
                       <label className="text-sm text-ink/60">Qty</label>
                       <input
@@ -99,18 +116,16 @@ export default function CartPageClient() {
                         className="w-16 rounded-lg border border-ink/10 px-2 py-1 text-center"
                       />
                     </div>
-                    <div className="font-semibold">
-                      ₹{(item.priceInINR * item.qty).toLocaleString("en-IN")}
-                    </div>
+                    <div className="font-semibold">Rs {(item.priceInINR * item.qty).toLocaleString("en-IN")}</div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="rounded-2xl bg-white p-6 shadow-soft space-y-4 h-fit">
+          <div className="rounded-2xl bg-white p-5 sm:p-6 shadow-soft space-y-4 h-fit lg:sticky lg:top-24">
             <div className="flex justify-between text-sm text-ink/70">
               <span>Subtotal</span>
-              <span>₹{total.toLocaleString("en-IN")}</span>
+              <span>Rs {total.toLocaleString("en-IN")}</span>
             </div>
             <div className="flex justify-between text-sm text-ink/70">
               <span>Shipping</span>
@@ -118,7 +133,7 @@ export default function CartPageClient() {
             </div>
             <div className="flex justify-between text-lg font-semibold">
               <span>Total</span>
-              <span>₹{total.toLocaleString("en-IN")}</span>
+              <span>Rs {total.toLocaleString("en-IN")}</span>
             </div>
             {!session && (
               <p className="text-sm text-ink/60">
@@ -130,12 +145,12 @@ export default function CartPageClient() {
               disabled={placing || items.length === 0}
               className="w-full rounded-full bg-ink text-white py-3 font-semibold hover:bg-coal disabled:opacity-50"
             >
-              {session ? "Place order" : "Login to checkout"}
+              Place order
             </button>
-            {message && <p className="text-sm text-accent">{message}</p>}
           </div>
         </div>
       )}
     </main>
   );
 }
+

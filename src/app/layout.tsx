@@ -14,7 +14,12 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Casual Wear | Modern Street & Lounge",
   description:
-    "A casual wear storefront built with Next.js, MongoDB, and Tailwind — explore, curate, and save your looks.",
+    "A casual wear storefront built with Next.js, MongoDB, and Tailwind - explore, curate, and save your looks.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

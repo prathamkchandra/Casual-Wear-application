@@ -24,6 +24,6 @@ a {
   }
 
   .section-shell {
-    @apply container mx-auto max-w-6xl;
+    @apply mx-auto w-full px-4 sm:px-6 lg:px-8 2xl:px-10;
   }
 }

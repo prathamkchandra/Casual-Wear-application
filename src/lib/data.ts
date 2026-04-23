@@ -2,6 +2,7 @@ import { dbConnect } from "./db";
 import mongoose from "mongoose";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
+import { decodeSlugParam, normalizeSlug } from "./slug";
 import { CategoryDTO, ProductDTO } from "@/types/shop";
 
 type ProductLean = {
@@ -48,7 +49,11 @@ export async function getProducts(limit?: number): Promise<ProductDTO[]> {
 
 export async function getProductBySlug(slug: string): Promise<ProductDTO | null> {
   await dbConnect();
-  const product = (await Product.findOne({ slug }).lean()) as ProductLean | null;
+  const decodedSlug = decodeSlugParam(slug);
+  const normalizedSlug = normalizeSlug(decodedSlug);
+  const product = ((await Product.findOne({ slug: normalizedSlug }).lean()) ||
+    (await Product.findOne({ slug: decodedSlug }).lean()) ||
+    (await Product.findOne({ slug: decodedSlug.toLowerCase() }).lean())) as ProductLean | null;
   if (!product) return null;
   return {
     _id: product._id.toString(),

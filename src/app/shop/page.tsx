@@ -10,10 +10,10 @@ export default async function ShopPage() {
   const categories = JSON.parse(JSON.stringify(categoriesRaw));
 
   return (
-    <main className="section-shell py-14 space-y-8">
+    <main className="section-shell py-10 sm:py-14 space-y-8">
       <div className="space-y-2">
         <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Shop</p>
-        <h1 className="text-3xl font-semibold">Choose your fit</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold">Choose your fit</h1>
         <p className="text-ink/70">
           Filter by category and price to build your casual rotation.
         </p>

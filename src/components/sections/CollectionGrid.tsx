@@ -1,12 +1,12 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { CategoryDTO } from "@/types/shop";
 
 export default function CollectionGrid({ categories }: { categories: CategoryDTO[] }) {
   return (
-    <section className="section-shell py-14">
-      <div className="flex items-center justify-between mb-6">
+    <section className="section-shell py-12 sm:py-14">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Categories</p>
           <h2 className="text-2xl font-semibold">Explore the range</h2>
@@ -45,3 +45,4 @@ export default function CollectionGrid({ categories }: { categories: CategoryDTO
     </section>
   );
 }
+

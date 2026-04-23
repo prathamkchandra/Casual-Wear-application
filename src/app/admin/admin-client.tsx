@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import useSWR from "swr";
+import { normalizeSlug } from "@/lib/slug";
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -122,7 +123,8 @@ export default function AdminClient() {
   };
 
   const saveProduct = async () => {
-    if (!prodState.slug) {
+    const normalizedSlug = normalizeSlug(prodState.slug || "");
+    if (!normalizedSlug) {
       setMessage("Product slug is required.");
       return;
     }
@@ -132,6 +134,7 @@ export default function AdminClient() {
     try {
       const payload = {
         ...prodState,
+        slug: normalizedSlug,
         priceInINR: Number(prodState.priceInINR || 0),
         stock: Number(prodState.stock || 0),
         images: (prodState.images || "")
@@ -212,7 +215,7 @@ export default function AdminClient() {
   };
 
   return (
-    <main className="section-shell py-12 space-y-8">
+    <main className="section-shell py-10 sm:py-12 space-y-8">
       <div className="space-y-2">
         <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Admin panel</p>
         <h1 className="text-3xl font-semibold">Store management</h1>
@@ -221,7 +224,7 @@ export default function AdminClient() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-2xl bg-white p-5 shadow-soft">
           <p className="text-sm text-ink/60">Products</p>
           <p className="mt-1 text-2xl font-semibold">{stats.products}</p>
@@ -258,7 +261,9 @@ export default function AdminClient() {
             placeholder="Slug"
             value={prodState.slug || ""}
             className="w-full rounded-lg border border-ink/10 px-3 py-2"
-            onChange={(e) => setProdState((s) => ({ ...s, slug: e.target.value }))}
+            onChange={(e) =>
+              setProdState((s) => ({ ...s, slug: normalizeSlug(e.target.value) }))
+            }
           />
           <input
             placeholder="Description"
@@ -266,7 +271,7 @@ export default function AdminClient() {
             className="w-full rounded-lg border border-ink/10 px-3 py-2"
             onChange={(e) => setProdState((s) => ({ ...s, description: e.target.value }))}
           />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               type="number"
               placeholder="Price (INR)"
@@ -383,11 +388,11 @@ export default function AdminClient() {
             products.map((product) => (
               <div
                 key={product._id}
-                className="rounded-xl border border-ink/10 p-4 flex items-center justify-between gap-4"
+                className="rounded-xl border border-ink/10 p-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold">{product.title}</p>
-                  <p className="text-sm text-ink/60">
+                  <p className="text-sm text-ink/60 break-words">
                     {product.slug} | Rs {product.priceInINR.toLocaleString("en-IN")} | Stock{" "}
                     {product.stock}
                   </p>
@@ -427,7 +432,7 @@ export default function AdminClient() {
               orders.map((order) => (
                 <div
                   key={order._id}
-                  className="rounded-xl border border-ink/10 p-4 flex items-center justify-between"
+                  className="rounded-xl border border-ink/10 p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <p className="font-semibold">#{order._id.slice(-6)}</p>
@@ -456,8 +461,8 @@ export default function AdminClient() {
                 .map((user) => (
                   <div
                     key={user._id}
-                    className="rounded-xl border border-ink/10 p-4 flex items-center justify-between"
-                  >
+                  className="rounded-xl border border-ink/10 p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+                >
                     <div>
                       <p className="font-semibold">{user.name}</p>
                       <p className="text-sm text-ink/60">{user.email}</p>

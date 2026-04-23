@@ -1,4 +1,4 @@
-import { getServerSession } from "next-auth";
+﻿import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
@@ -34,18 +34,18 @@ export default async function OrdersPage() {
     .lean()) as OrderRow[];
 
   return (
-    <main className="section-shell py-12 space-y-8">
+    <main className="section-shell py-10 sm:py-12 space-y-8">
       <div className="space-y-2">
         <p className="text-xs uppercase tracking-[0.2em] text-ink/50">My orders</p>
-        <h1 className="text-3xl font-semibold">Order history</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold">Order history</h1>
         <p className="text-ink/70">Track your purchases and see each item from previous orders.</p>
       </div>
 
       <div className="space-y-4">
         {orders.length ? (
           orders.map((order) => (
-            <div key={order._id.toString()} className="rounded-2xl bg-white p-6 shadow-soft space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 pb-4">
+            <div key={order._id.toString()} className="rounded-2xl bg-white p-4 sm:p-6 shadow-soft space-y-4">
+              <div className="grid gap-3 border-b border-ink/10 pb-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <p className="text-sm text-ink/60">Order ID</p>
                   <p className="font-semibold">#{order._id.toString().slice(-6)}</p>
@@ -58,7 +58,7 @@ export default async function OrdersPage() {
                   <p className="text-sm text-ink/60">Status</p>
                   <p className="font-semibold uppercase tracking-[0.15em]">{order.status}</p>
                 </div>
-                <div className="text-right">
+                <div className="sm:text-right lg:text-left xl:text-right">
                   <p className="text-sm text-ink/60">Total</p>
                   <p className="font-semibold">Rs {order.grandTotalINR.toLocaleString("en-IN")}</p>
                 </div>
@@ -68,7 +68,7 @@ export default async function OrdersPage() {
                 {order.items.map((item, idx) => (
                   <div
                     key={`${order._id.toString()}-${idx}`}
-                    className="rounded-xl border border-ink/10 p-3 flex items-center justify-between gap-4"
+                    className="rounded-xl border border-ink/10 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
                       <p className="font-semibold">{item.title}</p>
@@ -87,7 +87,7 @@ export default async function OrdersPage() {
             </div>
           ))
         ) : (
-          <div className="rounded-2xl bg-white p-8 shadow-soft">
+          <div className="rounded-2xl bg-white p-6 sm:p-8 shadow-soft">
             <p className="text-ink/70">No orders yet. Start by adding products to your cart.</p>
           </div>
         )}
@@ -95,3 +95,4 @@ export default async function OrdersPage() {
     </main>
   );
 }
+
