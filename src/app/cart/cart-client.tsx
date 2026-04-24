@@ -48,12 +48,12 @@ export default function CartPageClient() {
   return (
     <main className="section-shell py-10 sm:py-12 space-y-8">
       <div className="space-y-2">
-        <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Cart</p>
-        <h1 className="text-2xl sm:text-3xl font-semibold">Your picks</h1>
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-ink/50">Cart</p>
+        <h1 className="text-3xl sm:text-4xl font-bold">Your picks</h1>
       </div>
       {message && (
         <p
-          className={`rounded-xl border px-4 py-3 text-sm ${
+          className={`rounded-xl border px-4 py-3 text-base font-semibold ${
             messageType === "success"
               ? "border-green-200 bg-green-50 text-green-700"
               : "border-red-200 bg-red-50 text-red-700"
@@ -64,8 +64,8 @@ export default function CartPageClient() {
       )}
       {items.length === 0 ? (
         <div className="rounded-2xl bg-white p-6 sm:p-8 text-center shadow-soft">
-          <p className="text-ink/70">Your cart is empty.</p>
-          <Link href="/shop" className="mt-4 inline-block rounded-full bg-ink px-4 py-2 text-white">
+          <p className="text-base sm:text-lg font-medium text-ink/70">Your cart is empty.</p>
+          <Link href="/shop" className="mt-4 inline-block rounded-full bg-ink px-4 py-2 text-base font-bold text-white">
             Shop products
           </Link>
         </div>
@@ -89,8 +89,8 @@ export default function CartPageClient() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="font-semibold line-clamp-2">{item.name}</h3>
-                      <p className="text-sm text-ink/60">
+                      <h3 className="text-lg font-bold line-clamp-2">{item.name}</h3>
+                      <p className="text-base text-ink/60">
                         {item.size && `Size ${item.size}`}
                         {item.size && item.color ? " | " : ""}
                         {item.color && item.color}
@@ -98,14 +98,14 @@ export default function CartPageClient() {
                     </div>
                     <button
                       onClick={() => removeItem(item.productId, item.size, item.color)}
-                      className="text-sm text-ink/50 hover:text-accent"
+                      className="text-sm font-semibold text-ink/50 hover:text-accent"
                     >
                       Remove
                     </button>
                   </div>
                   <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-3">
-                      <label className="text-sm text-ink/60">Qty</label>
+                      <label className="text-base font-medium text-ink/60">Qty</label>
                       <input
                         type="number"
                         min={1}
@@ -116,34 +116,34 @@ export default function CartPageClient() {
                         className="w-16 rounded-lg border border-ink/10 px-2 py-1 text-center"
                       />
                     </div>
-                    <div className="font-semibold">Rs {(item.priceInINR * item.qty).toLocaleString("en-IN")}</div>
+                    <div className="text-lg font-bold">Rs {(item.priceInINR * item.qty).toLocaleString("en-IN")}</div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
           <div className="rounded-2xl bg-white p-5 sm:p-6 shadow-soft space-y-4 h-fit lg:sticky lg:top-24">
-            <div className="flex justify-between text-sm text-ink/70">
+            <div className="flex justify-between text-base font-medium text-ink/70">
               <span>Subtotal</span>
               <span>Rs {total.toLocaleString("en-IN")}</span>
             </div>
-            <div className="flex justify-between text-sm text-ink/70">
+            <div className="flex justify-between text-base font-medium text-ink/70">
               <span>Shipping</span>
               <span>Included</span>
             </div>
-            <div className="flex justify-between text-lg font-semibold">
+            <div className="flex justify-between text-xl font-bold">
               <span>Total</span>
               <span>Rs {total.toLocaleString("en-IN")}</span>
             </div>
             {!session && (
-              <p className="text-sm text-ink/60">
+              <p className="text-base text-ink/60">
                 Login to save your cart and place the order.
               </p>
             )}
             <button
               onClick={placeOrder}
               disabled={placing || items.length === 0}
-              className="w-full rounded-full bg-ink text-white py-3 font-semibold hover:bg-coal disabled:opacity-50"
+              className="w-full rounded-full bg-ink text-white py-3 text-base font-bold hover:bg-coal disabled:opacity-50"
             >
               Place order
             </button>

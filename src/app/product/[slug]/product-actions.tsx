@@ -27,13 +27,13 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
     <div className="space-y-4">
       {(product.sizes?.length ?? 0) > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Size</p>
+          <p className="text-base font-bold">Size</p>
           <div className="flex gap-2">
             {(product.sizes ?? []).map((s) => (
               <button
                 key={s}
                 onClick={() => setSize(s)}
-                className={`rounded-full border px-3 py-2 text-sm ${
+                className={`rounded-full border px-3 py-2 text-base font-semibold ${
                   size === s
                     ? "border-ink bg-ink text-white"
                     : "border-ink/10 text-ink/70 hover:border-ink/40"
@@ -48,13 +48,13 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
 
       {(product.colors?.length ?? 0) > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Color</p>
+          <p className="text-base font-bold">Color</p>
           <div className="flex gap-2">
             {(product.colors ?? []).map((c) => (
               <button
                 key={c}
                 onClick={() => setColor(c)}
-                className={`rounded-full border px-3 py-2 text-sm capitalize ${
+                className={`rounded-full border px-3 py-2 text-base font-semibold capitalize ${
                   color === c
                     ? "border-ink bg-ink text-white"
                     : "border-ink/10 text-ink/70 hover:border-ink/40"
@@ -68,7 +68,7 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
       )}
 
       <div className="flex items-center gap-4">
-        <label className="text-sm font-semibold">Qty</label>
+        <label className="text-base font-bold">Qty</label>
         <input
           type="number"
           min={1}
@@ -80,7 +80,7 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
 
       <button
         onClick={handleAdd}
-        className="rounded-full bg-ink text-white px-6 py-3 text-sm font-semibold hover:bg-coal"
+        className="rounded-full bg-ink text-white px-6 py-3 text-base font-bold hover:bg-coal"
       >
         Add to cart
       </button>

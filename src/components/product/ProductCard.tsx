@@ -34,11 +34,11 @@ export default function ProductCard({ product }: { product: ProductDTO }) {
       </div>
       <div className="p-4 space-y-2">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-base sm:text-lg font-semibold leading-tight line-clamp-2">{product.title}</h3>
-          <span className="text-sm font-semibold text-accent">Rs {product.priceInINR.toLocaleString("en-IN")}</span>
+          <h3 className="text-lg sm:text-xl font-bold leading-tight line-clamp-2">{product.title}</h3>
+          <span className="text-base font-bold text-accent">Rs {product.priceInINR.toLocaleString("en-IN")}</span>
         </div>
-        <p className="text-sm text-ink/60 line-clamp-2">{product.description}</p>
-        <div className="flex flex-wrap gap-2 text-xs text-ink/50">
+        <p className="text-sm sm:text-base text-ink/60 line-clamp-2">{product.description}</p>
+        <div className="flex flex-wrap gap-2 text-sm font-medium text-ink/55">
           {product.sizes?.slice(0, 3).map((size) => (
             <span
               key={size}

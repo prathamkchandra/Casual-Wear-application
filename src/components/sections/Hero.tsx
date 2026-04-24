@@ -6,31 +6,31 @@ export default function Hero() {
   return (
     <section className="section-shell grid gap-6 lg:gap-10 py-12 sm:py-14 lg:py-20 lg:grid-cols-2 lg:items-center">
       <div className="space-y-6">
-        <p className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold text-accent shadow-sm">
+        <p className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-bold text-accent shadow-sm">
           New drop - Lounge & Street
         </p>
-        <h1 className="text-3xl leading-tight font-semibold sm:text-4xl md:text-5xl">
+        <h1 className="text-4xl leading-tight font-bold sm:text-5xl xl:text-6xl">
           Effortless casuals built for long days and late nights.
         </h1>
-        <p className="text-ink/70 text-base sm:text-lg">
+        <p className="text-ink/70 text-lg sm:text-xl font-medium">
           Blend of breathable fabrics, relaxed cuts, and confident palettes. Curate your
           daily rotation with pieces that move with you.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
             href="/shop"
-            className="rounded-full bg-ink text-white px-5 py-3 text-sm font-semibold hover:bg-coal text-center"
+            className="rounded-full bg-ink text-white px-5 py-3 text-base font-bold hover:bg-coal text-center"
           >
             Shop collection
           </Link>
           <Link
             href="#lookbook"
-            className="rounded-full border border-ink/10 px-5 py-3 text-sm font-semibold hover:border-accent hover:text-accent text-center"
+            className="rounded-full border border-ink/10 px-5 py-3 text-base font-bold hover:border-accent hover:text-accent text-center"
           >
             View lookbook
           </Link>
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-sm text-ink/60">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-sm sm:text-base font-medium text-ink/60">
           <span>Free exchanges</span>
           <span className="hidden sm:inline h-4 w-px bg-ink/10" />
           <span>Made for India - INR pricing</span>
@@ -52,4 +52,3 @@ export default function Hero() {
     </section>
   );
 }
-

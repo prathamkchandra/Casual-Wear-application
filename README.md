@@ -26,6 +26,7 @@ This project is a full-stack e-commerce application designed to showcase casual 
 - 👨‍💼 **Admin Dashboard** - Manage products and categories
 - 📱 **Responsive Design** - Mobile-first design with Tailwind CSS
 - 🎨 **Modern UI** - Clean and modern user interface with smooth interactions
+- 🤖 **AI Stylist** - Prompt-based outfit recommendations with safe fallback mode
 
 ## Project Structure
 
@@ -87,7 +88,11 @@ Create a `.env.local` file in the root directory:
 MONGODB_URI=your_mongodb_connection_string
 NEXTAUTH_SECRET=your_secret_key
 NEXTAUTH_URL=http://localhost:3000
+OPENAI_API_KEY=your_openai_api_key_optional
+OPENAI_MODEL=gpt-4o-mini
 ```
+
+`OPENAI_API_KEY` is optional. If it is missing or unavailable in production, the app automatically uses local fallback recommendations.
 
 4. Seed the database (optional):
 ```bash
@@ -127,6 +132,7 @@ The following API endpoints are available:
 - `GET /api/orders` - Get user orders
 - `POST /api/orders` - Create order
 - `GET /api/users` - Get users (admin)
+- `POST /api/ai/stylist` - AI outfit recommendations (OpenAI + fallback)
 
 ## Authentication
 

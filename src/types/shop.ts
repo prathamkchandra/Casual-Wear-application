@@ -19,3 +19,18 @@ export type ProductDTO = {
   stock?: number;
   tags?: string[];
 };
+
+export type AiRecommendationDTO = {
+  slug: string;
+  title: string;
+  priceInINR: number;
+  image: string;
+  reason: string;
+};
+
+export type AiStylistResponseDTO = {
+  message: string;
+  source: "openai" | "fallback";
+  recommendations: AiRecommendationDTO[];
+  warning?: string;
+};

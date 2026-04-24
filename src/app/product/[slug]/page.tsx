@@ -25,13 +25,13 @@ export default async function ProductPage({ params }: { params: { slug: string }
       </div>
       <div className="space-y-6">
         <div className="space-y-2">
-          <p className="text-sm text-ink/60">New arrival</p>
-          <h1 className="text-2xl sm:text-3xl font-semibold leading-tight">{product.title}</h1>
-          <p className="text-base sm:text-lg text-ink/70">{product.description}</p>
+          <p className="text-sm sm:text-base font-semibold text-ink/60">New arrival</p>
+          <h1 className="text-3xl sm:text-4xl font-bold leading-tight">{product.title}</h1>
+          <p className="text-lg sm:text-xl text-ink/70">{product.description}</p>
         </div>
-        <div className="text-2xl sm:text-3xl font-semibold">Rs {product.priceInINR.toLocaleString("en-IN")}</div>
+        <div className="text-3xl sm:text-4xl font-bold">Rs {product.priceInINR.toLocaleString("en-IN")}</div>
         <ProductDetailActions product={plainProduct} />
-        <div className="space-y-2 text-sm text-ink/70">
+        <div className="space-y-2 text-base font-medium text-ink/70">
           <p>Fabric: breathable cotton blend</p>
           <p>Care: Machine wash cold, tumble dry low</p>
           <p>Delivery: 3-5 business days</p>

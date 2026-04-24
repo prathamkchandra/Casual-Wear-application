@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import Link from "next/link";
@@ -17,9 +17,9 @@ export default function Footer() {
             <div className="space-y-5">
               <div className="leading-none">
                 <p className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight">casual</p>
-                <p className="text-4xl sm:text-5xl lg:text-6xl font-light -mt-1 sm:-mt-2">wear</p>
+                <p className="text-4xl sm:text-5xl lg:text-6xl font-semibold -mt-1 sm:-mt-2">wear</p>
               </div>
-              <p className="text-base sm:text-lg text-[#f4efe9]/90">Streetwear that actually keeps up.</p>
+              <p className="text-lg sm:text-xl font-medium text-[#f4efe9]/90">Streetwear that actually keeps up.</p>
               <div className="flex items-center gap-3">
                 <SocialLink label="Instagram" href="https://instagram.com">
                   <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Z" />
@@ -37,8 +37,8 @@ export default function Footer() {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl sm:text-2xl font-semibold uppercase tracking-[0.08em]">Shop</h3>
-              <div className="space-y-2 text-base sm:text-lg text-[#f4efe9]/90">
+              <h3 className="text-2xl sm:text-3xl font-bold uppercase tracking-[0.08em]">Shop</h3>
+              <div className="space-y-2 text-lg sm:text-xl font-medium text-[#f4efe9]/90">
                 <Link href="/shop" className="block hover:text-white">
                   New Arrivals
                 </Link>
@@ -55,8 +55,8 @@ export default function Footer() {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl sm:text-2xl font-semibold uppercase tracking-[0.08em]">Help</h3>
-              <div className="space-y-2 text-base sm:text-lg text-[#f4efe9]/90">
+              <h3 className="text-2xl sm:text-3xl font-bold uppercase tracking-[0.08em]">Help</h3>
+              <div className="space-y-2 text-lg sm:text-xl font-medium text-[#f4efe9]/90">
                 {role === "admin" ? (
                   <Link href="/admin" className="block hover:text-white">
                     Admin Panel
@@ -88,8 +88,8 @@ export default function Footer() {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl sm:text-2xl font-semibold uppercase tracking-[0.08em]">Contact Us</h3>
-              <div className="space-y-3 text-base sm:text-lg text-[#f4efe9]/90">
+              <h3 className="text-2xl sm:text-3xl font-bold uppercase tracking-[0.08em]">Contact Us</h3>
+              <div className="space-y-3 text-lg sm:text-xl font-medium text-[#f4efe9]/90">
                 <p>For order related queries</p>
                 <a href="tel:+918697009000" className="block hover:text-white">
                   +91 86970 09000
@@ -98,13 +98,13 @@ export default function Footer() {
                 <a href="tel:+919988426000" className="block hover:text-white">
                   +91 99884 26000
                 </a>
-                <p className="text-base text-[#f4efe9]/75">Mon-Fri (10 AM - 6 PM)</p>
+                <p className="text-base sm:text-lg font-medium text-[#f4efe9]/75">Mon-Fri (10 AM - 6 PM)</p>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-[#f4efe9]/30 pt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-sm sm:text-base text-[#f4efe9]/80">
-            <p>Copyright © {year}, casual.wear. All rights reserved.</p>
+          <div className="border-t border-[#f4efe9]/30 pt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-sm sm:text-base font-medium text-[#f4efe9]/80">
+            <p>Copyright (c) {year}, casual.wear. All rights reserved.</p>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               <a href="#" className="hover:text-white">
                 About Us
@@ -154,3 +154,5 @@ function SocialLink({
     </a>
   );
 }
+
+

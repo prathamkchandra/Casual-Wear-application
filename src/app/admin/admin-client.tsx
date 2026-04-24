@@ -217,36 +217,36 @@ export default function AdminClient() {
   return (
     <main className="section-shell py-10 sm:py-12 space-y-8">
       <div className="space-y-2">
-        <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Admin panel</p>
-        <h1 className="text-3xl font-semibold">Store management</h1>
-        <p className="text-ink/70">
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-ink/50">Admin panel</p>
+        <h1 className="text-3xl sm:text-4xl font-bold">Store management</h1>
+        <p className="text-base sm:text-lg text-ink/70">
           Manage products, categories, customers, and incoming orders from one place.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-2xl bg-white p-5 shadow-soft">
-          <p className="text-sm text-ink/60">Products</p>
-          <p className="mt-1 text-2xl font-semibold">{stats.products}</p>
+          <p className="text-base font-medium text-ink/60">Products</p>
+          <p className="mt-1 text-3xl font-bold">{stats.products}</p>
         </div>
         <div className="rounded-2xl bg-white p-5 shadow-soft">
-          <p className="text-sm text-ink/60">Orders</p>
-          <p className="mt-1 text-2xl font-semibold">{stats.orders}</p>
+          <p className="text-base font-medium text-ink/60">Orders</p>
+          <p className="mt-1 text-3xl font-bold">{stats.orders}</p>
         </div>
         <div className="rounded-2xl bg-white p-5 shadow-soft">
-          <p className="text-sm text-ink/60">Customers</p>
-          <p className="mt-1 text-2xl font-semibold">{stats.customers}</p>
+          <p className="text-base font-medium text-ink/60">Customers</p>
+          <p className="mt-1 text-3xl font-bold">{stats.customers}</p>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_1fr]">
         <div className="rounded-2xl bg-white p-6 shadow-soft space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">
+            <h2 className="text-xl font-bold">
               {editingSlug ? "Edit product" : "Create product"}
             </h2>
             {editingSlug && (
-              <button onClick={cancelEdit} className="text-sm text-ink/70 hover:text-accent">
+              <button onClick={cancelEdit} className="text-sm font-semibold text-ink/70 hover:text-accent">
                 Cancel edit
               </button>
             )}
@@ -254,13 +254,13 @@ export default function AdminClient() {
           <input
             placeholder="Title"
             value={prodState.title || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setProdState((s) => ({ ...s, title: e.target.value }))}
           />
           <input
             placeholder="Slug"
             value={prodState.slug || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) =>
               setProdState((s) => ({ ...s, slug: normalizeSlug(e.target.value) }))
             }
@@ -268,7 +268,7 @@ export default function AdminClient() {
           <input
             placeholder="Description"
             value={prodState.description || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setProdState((s) => ({ ...s, description: e.target.value }))}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -276,7 +276,7 @@ export default function AdminClient() {
               type="number"
               placeholder="Price (INR)"
               value={prodState.priceInINR || 0}
-              className="w-full rounded-lg border border-ink/10 px-3 py-2"
+              className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
               onChange={(e) =>
                 setProdState((s) => ({ ...s, priceInINR: Number(e.target.value) }))
               }
@@ -285,13 +285,13 @@ export default function AdminClient() {
               type="number"
               placeholder="Stock"
               value={prodState.stock || 0}
-              className="w-full rounded-lg border border-ink/10 px-3 py-2"
+              className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
               onChange={(e) => setProdState((s) => ({ ...s, stock: Number(e.target.value) }))}
             />
           </div>
           <select
             value={prodState.categorySlug || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setProdState((s) => ({ ...s, categorySlug: e.target.value }))}
           >
             <option value="">Select category</option>
@@ -304,73 +304,73 @@ export default function AdminClient() {
           <input
             placeholder="Image URLs (comma separated)"
             value={prodState.images || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setProdState((s) => ({ ...s, images: e.target.value }))}
           />
           <input
             placeholder="Sizes (comma separated)"
             value={prodState.sizes || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setProdState((s) => ({ ...s, sizes: e.target.value }))}
           />
           <input
             placeholder="Colors (comma separated)"
             value={prodState.colors || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setProdState((s) => ({ ...s, colors: e.target.value }))}
           />
           <button
             disabled={busy}
             onClick={saveProduct}
-            className="rounded-full bg-ink text-white px-4 py-2 text-sm font-semibold hover:bg-coal disabled:opacity-50"
+            className="rounded-full bg-ink text-white px-4 py-2 text-base font-bold hover:bg-coal disabled:opacity-50"
           >
             {editingSlug ? "Update product" : "Create product"}
           </button>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-soft space-y-4">
-          <h2 className="text-lg font-semibold">Create category</h2>
+          <h2 className="text-xl font-bold">Create category</h2>
           <input
             placeholder="Name"
             value={catState.name || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setCatState((s) => ({ ...s, name: e.target.value }))}
           />
           <input
             placeholder="Slug"
             value={catState.slug || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setCatState((s) => ({ ...s, slug: e.target.value }))}
           />
           <input
             placeholder="Description"
             value={catState.description || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setCatState((s) => ({ ...s, description: e.target.value }))}
           />
           <input
             placeholder="Hero image URL"
             value={catState.heroImage || ""}
-            className="w-full rounded-lg border border-ink/10 px-3 py-2"
+            className="w-full rounded-lg border border-ink/10 px-3 py-2 text-base"
             onChange={(e) => setCatState((s) => ({ ...s, heroImage: e.target.value }))}
           />
           <button
             disabled={busy}
             onClick={createCategory}
-            className="rounded-full bg-ink text-white px-4 py-2 text-sm font-semibold hover:bg-coal disabled:opacity-50"
+            className="rounded-full bg-ink text-white px-4 py-2 text-base font-bold hover:bg-coal disabled:opacity-50"
           >
             Create category
           </button>
           <div className="space-y-2">
-            <p className="text-sm font-semibold">Existing categories</p>
+            <p className="text-base font-bold">Existing categories</p>
             {categories.length ? (
               categories.map((c) => (
-                <p key={c._id} className="text-sm text-ink/70">
+                <p key={c._id} className="text-base text-ink/70">
                   {c.name} ({c.slug})
                 </p>
               ))
             ) : (
-              <p className="text-sm text-ink/60">No categories yet.</p>
+              <p className="text-base text-ink/60">No categories yet.</p>
             )}
           </div>
         </div>
@@ -378,8 +378,8 @@ export default function AdminClient() {
 
       <div className="rounded-2xl bg-white p-6 shadow-soft space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Products listing</h2>
-          <button onClick={() => refetchProducts()} className="text-sm text-accent font-semibold">
+          <h2 className="text-xl font-bold">Products listing</h2>
+          <button onClick={() => refetchProducts()} className="text-sm font-bold text-accent">
             Refresh
           </button>
         </div>
@@ -391,8 +391,8 @@ export default function AdminClient() {
                 className="rounded-xl border border-ink/10 p-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="font-semibold">{product.title}</p>
-                  <p className="text-sm text-ink/60 break-words">
+                  <p className="text-lg font-bold">{product.title}</p>
+                  <p className="text-base text-ink/60 break-words">
                     {product.slug} | Rs {product.priceInINR.toLocaleString("en-IN")} | Stock{" "}
                     {product.stock}
                   </p>
@@ -400,13 +400,13 @@ export default function AdminClient() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => startEditProduct(product)}
-                    className="rounded-full border border-ink/15 px-3 py-1.5 text-sm hover:border-accent hover:text-accent"
+                    className="rounded-full border border-ink/15 px-3 py-1.5 text-sm font-semibold hover:border-accent hover:text-accent"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteProduct(product.slug)}
-                    className="rounded-full border border-red-200 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+                    className="rounded-full border border-red-200 px-3 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-50"
                   >
                     Delete
                   </button>
@@ -414,7 +414,7 @@ export default function AdminClient() {
               </div>
             ))
           ) : (
-            <p className="text-ink/60 text-sm">No products yet.</p>
+            <p className="text-ink/60 text-base">No products yet.</p>
           )}
         </div>
       </div>
@@ -422,8 +422,8 @@ export default function AdminClient() {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl bg-white p-6 shadow-soft space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Orders</h2>
-            <button onClick={() => refetchOrders()} className="text-sm text-accent font-semibold">
+            <h2 className="text-xl font-bold">Orders</h2>
+            <button onClick={() => refetchOrders()} className="text-sm font-bold text-accent">
               Refresh
             </button>
           </div>
@@ -435,25 +435,25 @@ export default function AdminClient() {
                   className="rounded-xl border border-ink/10 p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <p className="font-semibold">#{order._id.slice(-6)}</p>
-                    <p className="text-sm text-ink/60">
+                    <p className="text-base font-bold">#{order._id.slice(-6)}</p>
+                    <p className="text-base text-ink/60">
                       {new Date(order.createdAt).toLocaleString()} | {order.items.length} items
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">Rs {order.grandTotalINR.toLocaleString("en-IN")}</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-ink/50">{order.status}</p>
+                    <p className="text-lg font-bold">Rs {order.grandTotalINR.toLocaleString("en-IN")}</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/50">{order.status}</p>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-ink/60 text-sm">No orders yet.</p>
+              <p className="text-ink/60 text-base">No orders yet.</p>
             )}
           </div>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-soft space-y-4">
-          <h2 className="text-lg font-semibold">Customers</h2>
+          <h2 className="text-xl font-bold">Customers</h2>
           <div className="space-y-3">
             {users.length ? (
               users
@@ -464,22 +464,22 @@ export default function AdminClient() {
                   className="rounded-xl border border-ink/10 p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <div>
-                      <p className="font-semibold">{user.name}</p>
-                      <p className="text-sm text-ink/60">{user.email}</p>
+                      <p className="text-base font-bold">{user.name}</p>
+                      <p className="text-base text-ink/60">{user.email}</p>
                     </div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-ink/50">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/50">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 ))
             ) : (
-              <p className="text-ink/60 text-sm">No customers found.</p>
+              <p className="text-ink/60 text-base">No customers found.</p>
             )}
           </div>
         </div>
       </div>
 
-      {message && <p className="text-sm text-accent">{message}</p>}
+      {message && <p className="text-base font-semibold text-accent">{message}</p>}
     </main>
   );
 }

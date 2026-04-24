@@ -8,10 +8,10 @@ export default function CollectionGrid({ categories }: { categories: CategoryDTO
     <section className="section-shell py-12 sm:py-14">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-ink/50">Categories</p>
-          <h2 className="text-2xl font-semibold">Explore the range</h2>
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-ink/50">Categories</p>
+          <h2 className="text-3xl sm:text-4xl font-bold">Explore the range</h2>
         </div>
-        <Link href="/shop" className="text-sm font-semibold hover:text-accent">
+        <Link href="/shop" className="text-base font-bold hover:text-accent">
           View all
         </Link>
       </div>
@@ -36,8 +36,8 @@ export default function CollectionGrid({ categories }: { categories: CategoryDTO
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-4 left-4 right-4 text-white">
-              <h3 className="text-lg font-semibold">{cat.name}</h3>
-              <p className="text-sm text-white/80 line-clamp-2">{cat.description}</p>
+              <h3 className="text-xl sm:text-2xl font-bold">{cat.name}</h3>
+              <p className="text-sm sm:text-base font-medium text-white/80 line-clamp-2">{cat.description}</p>
             </div>
           </Link>
         ))}

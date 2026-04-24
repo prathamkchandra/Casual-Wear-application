@@ -32,10 +32,10 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-20 bg-sand/90 backdrop-blur border-b border-black/5">
       <div className="section-shell flex items-center justify-between py-3 md:py-4">
-        <Link href="/" className="text-xl font-semibold tracking-tight">
+        <Link href="/" className="text-2xl sm:text-[1.7rem] font-bold tracking-tight">
           casual<span className="text-accent">.wear</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-6 text-base font-semibold">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -46,7 +46,7 @@ export default function Navbar() {
             >
               {link.label}
               {link.href === "/cart" && count > 0 && (
-                <span className="absolute -top-2 -right-3 text-[11px] rounded-full bg-accent text-white px-2 py-0.5">
+                <span className="absolute -top-2 -right-3 text-xs font-bold rounded-full bg-accent text-white px-2 py-0.5">
                   {count}
                 </span>
               )}
@@ -77,7 +77,7 @@ export default function Navbar() {
             <>
               <button
                 onClick={() => signOut()}
-                className="rounded-full border border-ink/10 px-3 py-1 hover:border-accent hover:text-accent"
+                className="rounded-full border border-ink/10 px-3 py-1 text-sm font-semibold hover:border-accent hover:text-accent"
               >
                 Logout
               </button>
@@ -85,7 +85,7 @@ export default function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="rounded-full border border-ink/10 px-3 py-1 hover:border-accent hover:text-accent"
+              className="rounded-full border border-ink/10 px-3 py-1 text-sm font-semibold hover:border-accent hover:text-accent"
             >
               Login
             </Link>
@@ -149,7 +149,7 @@ export default function Navbar() {
 
       {mobileOpen && (
         <div className="md:hidden border-t border-black/5 bg-sand px-4 py-3">
-          <nav className="flex flex-col gap-2 text-sm font-medium">
+          <nav className="flex flex-col gap-2 text-base font-semibold">
             {links.map((link) => (
               <Link
                 key={link.href}
@@ -165,14 +165,14 @@ export default function Navbar() {
             {session ? (
               <button
                 onClick={() => signOut()}
-                className="rounded-xl border border-ink/10 px-3 py-2 text-left hover:border-accent hover:text-accent"
+                className="rounded-xl border border-ink/10 px-3 py-2 text-left font-semibold hover:border-accent hover:text-accent"
               >
                 Logout
               </button>
             ) : (
               <Link
                 href="/login"
-                className="rounded-xl border border-ink/10 px-3 py-2 hover:border-accent hover:text-accent"
+                className="rounded-xl border border-ink/10 px-3 py-2 font-semibold hover:border-accent hover:text-accent"
               >
                 Login
               </Link>
