@@ -20,20 +20,7 @@ export default function Footer() {
                 <p className="text-4xl sm:text-5xl lg:text-6xl font-semibold -mt-1 sm:-mt-2">wear</p>
               </div>
               <p className="text-lg sm:text-xl font-medium text-[#f4efe9]/90">Streetwear that actually keeps up.</p>
-              <div className="flex items-center gap-3">
-                <SocialLink label="Instagram" href="https://instagram.com">
-                  <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Z" />
-                  <circle cx="12" cy="12" r="3.2" />
-                  <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
-                </SocialLink>
-                <SocialLink label="YouTube" href="https://youtube.com">
-                  <path d="M21.5 8.2c-.2-1.6-1.4-2.8-3-3C16.4 5 14.2 5 12 5s-4.4 0-6.5.2c-1.6.2-2.8 1.4-3 3C2.3 9.6 2.3 11 2.3 12.4s0 2.8.2 4.2c.2 1.6 1.4 2.8 3 3 2.1.2 4.3.2 6.5.2s4.4 0 6.5-.2c1.6-.2 2.8-1.4 3-3 .2-1.4.2-2.8.2-4.2s0-2.8-.2-4.2Z" />
-                  <path d="m10 9 6 3.5-6 3.5V9Z" fill="currentColor" stroke="none" />
-                </SocialLink>
-                <SocialLink label="LinkedIn" href="https://linkedin.com">
-                  <path d="M7.2 9.4V20M7.2 6.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM11 20v-6c0-1.8 1.2-3 2.8-3s2.7 1.2 2.7 3v6M3 3h18v18H3z" />
-                </SocialLink>
-              </div>
+              
             </div>
 
             <div className="space-y-4">
@@ -75,15 +62,7 @@ export default function Footer() {
                     Cart
                   </Link>
                 )}
-                <a href="#" className="block hover:text-white">
-                  Shipping & Delivery
-                </a>
-                <a href="#" className="block hover:text-white">
-                  Returns & Exchanges
-                </a>
-                <a href="#" className="block hover:text-white">
-                  Privacy Policy
-                </a>
+                
               </div>
             </div>
 
@@ -92,30 +71,17 @@ export default function Footer() {
               <div className="space-y-3 text-lg sm:text-xl font-medium text-[#f4efe9]/90">
                 <p>For order related queries</p>
                 <a href="tel:+918697009000" className="block hover:text-white">
-                  +91 86970 09000
+                  +91 9353962945
                 </a>
-                <p>For feedback and partnership</p>
-                <a href="tel:+919988426000" className="block hover:text-white">
-                  +91 99884 26000
-                </a>
+            
                 <p className="text-base sm:text-lg font-medium text-[#f4efe9]/75">Mon-Fri (10 AM - 6 PM)</p>
               </div>
             </div>
           </div>
 
           <div className="border-t border-[#f4efe9]/30 pt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-sm sm:text-base font-medium text-[#f4efe9]/80">
-            <p>Copyright (c) {year}, casual.wear. All rights reserved.</p>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-              <a href="#" className="hover:text-white">
-                About Us
-              </a>
-              <a href="#" className="hover:text-white">
-                Contact us
-              </a>
-              <a href="#" className="hover:text-white">
-                Blogs
-              </a>
-            </div>
+            <p>Copyright © {year}, casual.wear. All rights reserved.</p>
+            
           </div>
         </div>
       </section>
@@ -154,5 +120,4 @@ function SocialLink({
     </a>
   );
 }
-
 

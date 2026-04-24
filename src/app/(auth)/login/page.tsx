@@ -29,6 +29,11 @@ export default function LoginPage() {
         const sessionRes = await fetch("/api/auth/session");
         const session = await sessionRes.json();
         const role = session?.user?.role;
+        const displayName = session?.user?.name || session?.user?.email?.split("@")[0] || "User";
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem("cw_login_welcome", "1");
+          window.sessionStorage.setItem("cw_login_name", displayName);
+        }
         router.replace(role === "admin" ? "/admin" : "/");
       }
     } catch {

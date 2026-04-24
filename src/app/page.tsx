@@ -1,6 +1,7 @@
 import CollectionGrid from "@/components/sections/CollectionGrid";
 import Hero from "@/components/sections/Hero";
 import AiStylist from "@/components/sections/AiStylist";
+import LoginWelcomeToast from "@/components/sections/LoginWelcomeToast";
 import ProductCard from "@/components/product/ProductCard";
 import { getCategories, getProducts } from "@/lib/data";
 
@@ -11,6 +12,7 @@ export default async function Home() {
 
   return (
     <main>
+      <LoginWelcomeToast />
       <Hero />
       <AiStylist />
       <CollectionGrid categories={categories.slice(0, 3)} />
