@@ -123,6 +123,26 @@ export default function AdminClient() {
     }
   };
 
+  const deleteCategory = async (slug: string) => {
+    const ok = window.confirm(`Delete category "${slug}"?`);
+    if (!ok) return;
+
+    setBusy(true);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/categories/${slug}`, { method: "DELETE" });
+      setMessage(res.ok ? "Category deleted." : "Could not delete category.");
+      if (res.ok) {
+        if (prodState.categorySlug === slug) {
+          setProdState((prev) => ({ ...prev, categorySlug: "" }));
+        }
+        refetchCategories();
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const saveProduct = async () => {
     const normalizedSlug = normalizeSlug(prodState.slug || "");
     if (!normalizedSlug) {
@@ -366,9 +386,22 @@ export default function AdminClient() {
             <p className="text-base font-bold">Existing categories</p>
             {safeCategories.length ? (
               safeCategories.map((c) => (
-                <p key={c._id} className="text-base text-ink/70">
-                  {c.name} ({c.slug})
-                </p>
+                <div
+                  key={c._id}
+                  className="rounded-xl border border-ink/10 px-3 py-2 flex items-center justify-between gap-3"
+                >
+                  <p className="min-w-0 text-base text-ink/70 truncate">
+                    {c.name} ({c.slug})
+                  </p>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => deleteCategory(c.slug)}
+                    className="rounded-full border border-red-200 px-3 py-1 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                  >
+                    Delete
+                  </button>
+                </div>
               ))
             ) : (
               <p className="text-base text-ink/60">No categories yet.</p>
