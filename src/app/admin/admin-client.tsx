@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import useSWR from "swr";
 import { normalizeSlug } from "@/lib/slug";
 
@@ -35,7 +35,7 @@ type Order = {
   _id: string;
   createdAt: string;
   status: string;
-  items: Array<{ qty: number }>;
+  items?: Array<{ qty: number }>;
   grandTotalINR: number;
 };
 
@@ -93,15 +93,16 @@ export default function AdminClient() {
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const safeCategories = Array.isArray(categories) ? categories : [];
+  const safeProducts = Array.isArray(products) ? products : [];
+  const safeOrders = Array.isArray(orders) ? orders : [];
+  const safeUsers = Array.isArray(users) ? users : [];
 
-  const stats = useMemo(
-    () => ({
-      products: products.length,
-      orders: orders.length,
-      customers: users.filter((u) => u.role === "user").length,
-    }),
-    [products, orders, users]
-  );
+  const stats = {
+    products: safeProducts.length,
+    orders: safeOrders.length,
+    customers: safeUsers.filter((u) => u.role === "user").length,
+  };
 
   const createCategory = async () => {
     setBusy(true);
@@ -188,7 +189,7 @@ export default function AdminClient() {
       images: (product.images || []).join(", "),
       sizes: (product.sizes || []).join(", "),
       colors: (product.colors || []).join(", "),
-      categorySlug: categories.find((c) => c._id === product.categoryId)?.slug || "",
+      categorySlug: safeCategories.find((c) => c._id === product.categoryId)?.slug || "",
     });
     setMessage(`Editing ${product.title}`);
   };
@@ -295,7 +296,7 @@ export default function AdminClient() {
             onChange={(e) => setProdState((s) => ({ ...s, categorySlug: e.target.value }))}
           >
             <option value="">Select category</option>
-            {categories.map((c) => (
+            {safeCategories.map((c) => (
               <option key={c._id} value={c.slug}>
                 {c.name}
               </option>
@@ -363,8 +364,8 @@ export default function AdminClient() {
           </button>
           <div className="space-y-2">
             <p className="text-base font-bold">Existing categories</p>
-            {categories.length ? (
-              categories.map((c) => (
+            {safeCategories.length ? (
+              safeCategories.map((c) => (
                 <p key={c._id} className="text-base text-ink/70">
                   {c.name} ({c.slug})
                 </p>
@@ -384,8 +385,8 @@ export default function AdminClient() {
           </button>
         </div>
         <div className="space-y-3">
-          {products.length ? (
-            products.map((product) => (
+          {safeProducts.length ? (
+            safeProducts.map((product) => (
               <div
                 key={product._id}
                 className="rounded-xl border border-ink/10 p-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between"
@@ -428,8 +429,8 @@ export default function AdminClient() {
             </button>
           </div>
           <div className="space-y-3">
-            {orders.length ? (
-              orders.map((order) => (
+            {safeOrders.length ? (
+              safeOrders.map((order) => (
                 <div
                   key={order._id}
                   className="rounded-xl border border-ink/10 p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
@@ -437,7 +438,7 @@ export default function AdminClient() {
                   <div>
                     <p className="text-base font-bold">#{order._id.slice(-6)}</p>
                     <p className="text-base text-ink/60">
-                      {new Date(order.createdAt).toLocaleString()} | {order.items.length} items
+                      {new Date(order.createdAt).toLocaleString()} | {(order.items ?? []).length} items
                     </p>
                   </div>
                   <div className="text-right">
@@ -455,8 +456,8 @@ export default function AdminClient() {
         <div className="rounded-2xl bg-white p-6 shadow-soft space-y-4">
           <h2 className="text-xl font-bold">Customers</h2>
           <div className="space-y-3">
-            {users.length ? (
-              users
+            {safeUsers.length ? (
+              safeUsers
                 .filter((user) => user.role === "user")
                 .map((user) => (
                   <div

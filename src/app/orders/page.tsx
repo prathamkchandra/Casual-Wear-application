@@ -9,7 +9,7 @@ type OrderRow = {
   createdAt: Date | string;
   status: string;
   grandTotalINR: number;
-  items: Array<{
+  items?: Array<{
     title: string;
     qty: number;
     priceInINR: number;
@@ -65,7 +65,7 @@ export default async function OrdersPage() {
               </div>
 
               <div className="space-y-3">
-                {order.items.map((item, idx) => (
+                {(order.items ?? []).map((item, idx) => (
                   <div
                     key={`${order._id.toString()}-${idx}`}
                     className="rounded-xl border border-ink/10 p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"

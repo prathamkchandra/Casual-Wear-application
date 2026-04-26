@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ProductDTO } from "@/types/shop";
 import { useCart } from "@/components/cart/CartProvider";
 import { DEFAULT_PRODUCT_IMAGE, getSafeProductImage } from "@/lib/image";
@@ -10,6 +10,16 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState(product.sizes?.[0]);
   const [color, setColor] = useState(product.colors?.[0]);
+  const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const hideTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current !== null) {
+        window.clearTimeout(hideTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleAdd = () => {
     addItem({
@@ -21,6 +31,13 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
       color,
       qty,
     });
+    setShowAddedMessage(true);
+    if (hideTimerRef.current !== null) {
+      window.clearTimeout(hideTimerRef.current);
+    }
+    hideTimerRef.current = window.setTimeout(() => {
+      setShowAddedMessage(false);
+    }, 2500);
   };
 
   return (
@@ -84,6 +101,11 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
       >
         Add to cart
       </button>
+      {showAddedMessage && (
+        <p className="rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm font-semibold text-green-700">
+          Item added to cart.
+        </p>
+      )}
     </div>
   );
 }
