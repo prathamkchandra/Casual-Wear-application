@@ -88,11 +88,10 @@ Create a `.env.local` file in the root directory:
 MONGODB_URI=your_mongodb_connection_string
 NEXTAUTH_SECRET=your_secret_key
 NEXTAUTH_URL=http://localhost:3000
-OPENAI_API_KEY=your_openai_api_key_optional
-OPENAI_MODEL=gpt-4o-mini
+
 ```
 
-`OPENAI_API_KEY` is optional. If it is missing or unavailable in production, the app automatically uses local fallback recommendations.
+
 
 4. Seed the database (optional):
 ```bash
