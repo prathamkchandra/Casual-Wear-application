@@ -154,8 +154,15 @@ export default function CartPageClient() {
           return;
         }
 
+        const RazorpayCheckout = window.Razorpay;
+        if (!RazorpayCheckout) {
+          setMessage("Unable to load Razorpay checkout.");
+          setMessageType("error");
+          return;
+        }
+
         const paid = await new Promise<boolean>((resolve) => {
-          const razorpay = new window.Razorpay({
+          const razorpay = new RazorpayCheckout({
             key: createOrderData.keyId,
             amount: createOrderData.amountInINR * 100,
             currency: createOrderData.currency,
