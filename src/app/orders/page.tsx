@@ -8,7 +8,21 @@ type OrderRow = {
   _id: { toString: () => string };
   createdAt: Date | string;
   status: string;
+  paymentMethod: "razorpay" | "cod";
+  paymentStatus: string;
+  shippingFeeINR: number;
   grandTotalINR: number;
+  deliveryAddress?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    addressLine1: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    phone: string;
+  };
   items?: Array<{
     title: string;
     qty: number;
@@ -61,6 +75,39 @@ export default async function OrdersPage() {
                 <div className="sm:text-right lg:text-left xl:text-right">
                   <p className="text-sm font-medium text-ink/60">Total</p>
                   <p className="text-lg font-bold">Rs {order.grandTotalINR.toLocaleString("en-IN")}</p>
+                </div>
+              </div>
+
+              <div className="grid gap-3 rounded-xl bg-sand/40 p-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-sm font-medium text-ink/60">Delivery</p>
+                  {order.deliveryAddress ? (
+                    <>
+                      <p className="text-base font-semibold">
+                        {order.deliveryAddress.firstName} {order.deliveryAddress.lastName}
+                      </p>
+                      <p className="text-base text-ink/60">
+                        {order.deliveryAddress.addressLine1}, {order.deliveryAddress.city},{" "}
+                        {order.deliveryAddress.state} {order.deliveryAddress.zipCode},{" "}
+                        {order.deliveryAddress.country}
+                      </p>
+                      <p className="text-base text-ink/60">{order.deliveryAddress.phone}</p>
+                    </>
+                  ) : (
+                    <p className="text-base text-ink/60">Delivery details are unavailable for this older order.</p>
+                  )}
+                </div>
+                <div className="sm:text-right">
+                  <p className="text-sm font-medium text-ink/60">Payment</p>
+                  <p className="text-base font-semibold">
+                    {order.paymentMethod === "razorpay" ? "Razorpay demo" : "Cash on Delivery"}
+                  </p>
+                  <p className="text-base text-ink/60">
+                    {(order.paymentStatus || "not available").replaceAll("_", " ")}
+                  </p>
+                  <p className="text-base text-ink/60">
+                    Shipping Rs {(order.shippingFeeINR || 0).toLocaleString("en-IN")}
+                  </p>
                 </div>
               </div>
 

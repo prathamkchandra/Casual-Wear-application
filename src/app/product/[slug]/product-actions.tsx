@@ -1,16 +1,21 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 import { ProductDTO } from "@/types/shop";
 import { useCart } from "@/components/cart/CartProvider";
 import { DEFAULT_PRODUCT_IMAGE, getSafeProductImage } from "@/lib/image";
 
 export default function ProductDetailActions({ product }: { product: ProductDTO }) {
   const { addItem } = useCart();
+  const { status } = useSession();
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState(product.sizes?.[0]);
   const [color, setColor] = useState(product.colors?.[0]);
-  const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
   const hideTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -22,6 +27,20 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
   }, []);
 
   const handleAdd = () => {
+    if (status !== "authenticated") {
+      setFeedback({
+        type: "error",
+        text: "Please create an account for shopping.",
+      });
+      if (hideTimerRef.current !== null) {
+        window.clearTimeout(hideTimerRef.current);
+      }
+      hideTimerRef.current = window.setTimeout(() => {
+        setFeedback(null);
+      }, 2500);
+      return;
+    }
+
     addItem({
       productId: product._id,
       name: product.title,
@@ -31,12 +50,15 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
       color,
       qty,
     });
-    setShowAddedMessage(true);
+    setFeedback({
+      type: "success",
+      text: "Item added to cart.",
+    });
     if (hideTimerRef.current !== null) {
       window.clearTimeout(hideTimerRef.current);
     }
     hideTimerRef.current = window.setTimeout(() => {
-      setShowAddedMessage(false);
+      setFeedback(null);
     }, 2500);
   };
 
@@ -101,9 +123,15 @@ export default function ProductDetailActions({ product }: { product: ProductDTO 
       >
         Add to cart
       </button>
-      {showAddedMessage && (
-        <p className="rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm font-semibold text-green-700">
-          Item added to cart.
+      {feedback && (
+        <p
+          className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+            feedback.type === "success"
+              ? "border-green-200 bg-green-50 text-green-700"
+              : "border-red-200 bg-red-50 text-red-700"
+          }`}
+        >
+          {feedback.text}
         </p>
       )}
     </div>

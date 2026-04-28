@@ -35,8 +35,14 @@ type Order = {
   _id: string;
   createdAt: string;
   status: string;
+  paymentMethod?: "razorpay" | "cod";
   items?: Array<{ qty: number }>;
   grandTotalINR: number;
+  deliveryAddress?: {
+    firstName: string;
+    lastName: string;
+    city: string;
+  };
 };
 
 type UserRow = {
@@ -473,9 +479,20 @@ export default function AdminClient() {
                     <p className="text-base text-ink/60">
                       {new Date(order.createdAt).toLocaleString()} | {(order.items ?? []).length} items
                     </p>
+                    {order.deliveryAddress && (
+                      <p className="text-sm text-ink/50">
+                        {order.deliveryAddress.firstName} {order.deliveryAddress.lastName} |{" "}
+                        {order.deliveryAddress.city}
+                      </p>
+                    )}
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold">Rs {order.grandTotalINR.toLocaleString("en-IN")}</p>
+                    {order.paymentMethod && (
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/50">
+                        {order.paymentMethod === "razorpay" ? "Razorpay demo" : "COD"}
+                      </p>
+                    )}
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink/50">{order.status}</p>
                   </div>
                 </div>

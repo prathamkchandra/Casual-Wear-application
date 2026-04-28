@@ -1,8 +1,8 @@
+import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { dbConnect } from "@/lib/db";
-import Order from "@/models/Order";
 import {
   normalizeDeliveryAddress,
   validateDeliveryAddress,
@@ -11,30 +11,23 @@ import {
 } from "@/lib/checkout";
 import { createStoreOrder } from "@/lib/orders";
 
-export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  await dbConnect();
-  const isAdmin = (session.user as any).role === "admin";
-  const filter = isAdmin ? {} : { userId: session.user.id };
-
-  const orders = await Order.find(filter).sort({ createdAt: -1 }).lean();
-  return NextResponse.json(orders);
-}
-
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ message: "Login required" }, { status: 401 });
   }
 
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  if (!keySecret) {
+    return NextResponse.json({ message: "Razorpay is not configured" }, { status: 500 });
+  }
+
   const body = await request.json();
   const itemsPayload = (body.items || []) as CheckoutItemInput[];
   const deliveryAddress = body.deliveryAddress as Partial<CheckoutDeliveryAddress>;
-  const paymentMethod = body.paymentMethod as "razorpay" | "cod" | undefined;
+  const razorpayOrderId = body.razorpayOrderId as string | undefined;
+  const razorpayPaymentId = body.razorpayPaymentId as string | undefined;
+  const razorpaySignature = body.razorpaySignature as string | undefined;
 
   if (!itemsPayload.length) {
     return NextResponse.json({ message: "No items to order" }, { status: 400 });
@@ -45,34 +38,39 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: deliveryValidationError }, { status: 400 });
   }
 
-  if (!paymentMethod || !["razorpay", "cod"].includes(paymentMethod)) {
-    return NextResponse.json({ message: "Please select a payment method" }, { status: 400 });
+  if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+    return NextResponse.json({ message: "Missing Razorpay payment details" }, { status: 400 });
   }
 
-  if (paymentMethod !== "cod") {
-    return NextResponse.json(
-      { message: "Razorpay orders must be completed through payment verification." },
-      { status: 400 }
-    );
+  const generatedSignature = crypto
+    .createHmac("sha256", keySecret)
+    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+    .digest("hex");
+
+  if (generatedSignature !== razorpaySignature) {
+    return NextResponse.json({ message: "Payment signature verification failed" }, { status: 400 });
   }
 
-  await dbConnect();
-  const normalizedDeliveryAddress = normalizeDeliveryAddress(
-    deliveryAddress as CheckoutDeliveryAddress
-  );
   try {
+    await dbConnect();
+    const normalizedDeliveryAddress = normalizeDeliveryAddress(
+      deliveryAddress as CheckoutDeliveryAddress
+    );
     const { order, emailSent } = await createStoreOrder({
       userId: session.user.id,
       itemsPayload,
       deliveryAddress: normalizedDeliveryAddress,
-      paymentMethod: "cod",
-      paymentStatus: "cod_pending",
-      paymentReference: `COD-${Date.now()}`,
+      paymentMethod: "razorpay",
+      paymentStatus: "razorpay_paid",
+      paymentReference: razorpayPaymentId,
+      gatewayOrderId: razorpayOrderId,
+      gatewaySignature: razorpaySignature,
     });
 
     return NextResponse.json({ order, emailSent }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not create order";
+    console.error("Razorpay payment verification failed", error);
+    const message = error instanceof Error ? error.message : "Unable to verify payment";
     const status = message === "Product not found" ? 400 : 500;
     return NextResponse.json({ message }, { status });
   }
