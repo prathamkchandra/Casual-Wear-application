@@ -49,7 +49,7 @@ const loadRazorpayScript = async () => {
 };
 
 export default function CartPageClient() {
-  const { items, total, updateQty, removeItem, clear } = useCart();
+  const { items, subtotal, discountINR, total, updateQty, removeItem, clear } = useCart();
   const { data: session } = useSession();
   const [placing, setPlacing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -434,8 +434,14 @@ export default function CartPageClient() {
               <div className="mt-4 space-y-3">
                 <div className="flex justify-between text-base font-medium text-ink/70">
                   <span>Subtotal</span>
-                  <span>Rs {total.toLocaleString("en-IN")}</span>
+                  <span>Rs {subtotal.toLocaleString("en-IN")}</span>
                 </div>
+                {discountINR > 0 && (
+                  <div className="flex justify-between text-base font-medium text-ink/70">
+                    <span>Discount (10%)</span>
+                    <span className="text-red-600">-Rs {discountINR.toLocaleString("en-IN")}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-base font-medium text-ink/70">
                   <span>Shipping Fee</span>
                   <span>Rs {SHIPPING_FEE_INR.toLocaleString("en-IN")}</span>

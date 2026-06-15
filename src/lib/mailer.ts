@@ -15,6 +15,7 @@ type SendOrderConfirmationParams = {
   deliveryAddress: IDeliveryAddress;
   items: OrderEmailItem[];
   subtotal: number;
+  discountINR?: number;
   shippingFeeINR: number;
   grandTotalINR: number;
   paymentMethod: PaymentMethod;
@@ -47,6 +48,7 @@ export const sendOrderConfirmationEmail = async ({
   deliveryAddress,
   items,
   subtotal,
+  discountINR,
   shippingFeeINR,
   grandTotalINR,
   paymentMethod,
@@ -103,6 +105,7 @@ export const sendOrderConfirmationEmail = async ({
         </table>
         <div style="margin-top:16px;border-top:1px solid #e5e7eb;padding-top:16px;">
           <p style="margin:0 0 6px;"><strong>Subtotal:</strong> ${formatCurrency(subtotal)}</p>
+          ${typeof discountINR === "number" && discountINR > 0 ? `<p style="margin:0 0 6px;"><strong>Discount:</strong> -${formatCurrency(discountINR)}</p>` : ""}
           <p style="margin:0 0 6px;"><strong>Shipping:</strong> ${formatCurrency(shippingFeeINR)}</p>
           <p style="margin:0;"><strong>Total:</strong> ${formatCurrency(grandTotalINR)}</p>
         </div>

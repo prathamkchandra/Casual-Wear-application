@@ -9,6 +9,7 @@ import {
   type CheckoutDeliveryAddress,
   type CheckoutItemInput,
 } from "@/lib/checkout";
+import { computeCartTotals } from "@/lib/checkout";
 import { buildOrderItems } from "@/lib/orders";
 import { getRazorpayClient, getRazorpayKeyId } from "@/lib/razorpay";
 
@@ -34,8 +35,8 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const orderItems = await buildOrderItems(itemsPayload);
-    const subtotal = orderItems.reduce((sum, item) => sum + item.priceInINR * item.qty, 0);
-    const grandTotalINR = subtotal + SHIPPING_FEE_INR;
+    const { subtotal, discountINR, discountedSubtotal } = computeCartTotals(orderItems as any);
+    const grandTotalINR = discountedSubtotal + SHIPPING_FEE_INR;
     const razorpay = getRazorpayClient();
     const razorpayOrder = await razorpay.orders.create({
       amount: grandTotalINR * 100,

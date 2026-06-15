@@ -6,6 +6,7 @@ import { DEFAULT_PRODUCT_IMAGE, getSafeProductImage } from "@/lib/image";
 import type { CheckoutDeliveryAddress, CheckoutItemInput } from "@/lib/checkout";
 import { SHIPPING_FEE_INR } from "@/lib/checkout";
 import { sendOrderConfirmationEmail } from "@/lib/mailer";
+import { computeCartTotals } from "@/lib/checkout";
 
 export const buildOrderItems = async (itemsPayload: CheckoutItemInput[]) => {
   const productIds = itemsPayload.map((i) => i.productId);
@@ -64,9 +65,9 @@ export const createStoreOrder = async ({
   clearCart = true,
 }: CreateStoreOrderParams) => {
   const orderItems = await buildOrderItems(itemsPayload);
-  const subtotal = orderItems.reduce((sum, item) => sum + item.priceInINR * item.qty, 0);
+  const { subtotal, discountINR, discountedSubtotal } = computeCartTotals(orderItems as any);
   const shippingFeeINR = SHIPPING_FEE_INR;
-  const grandTotalINR = subtotal + shippingFeeINR;
+  const grandTotalINR = discountedSubtotal + shippingFeeINR;
 
   const order = await Order.create({
     userId,
@@ -93,6 +94,7 @@ export const createStoreOrder = async ({
     deliveryAddress,
     items: orderItems,
     subtotal,
+    discountINR,
     shippingFeeINR,
     grandTotalINR,
     paymentMethod,

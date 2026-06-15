@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import { useSession } from "next-auth/react";
+import { computeCartTotals } from "@/lib/checkout";
 
 export type CartItem = {
   productId: string;
@@ -84,6 +85,9 @@ type CartContextValue = {
   removeItem: (id: string, size?: string, color?: string) => void;
   updateQty: (id: string, qty: number, size?: string, color?: string) => void;
   clear: () => void;
+  subtotal: number;
+  discountINR: number;
+  discountRate: number;
   total: number;
 };
 
@@ -243,14 +247,13 @@ export default function CartProvider({ children }: { children: React.ReactNode }
     if (status !== "authenticated") localStorage.removeItem(GUEST_STORAGE_KEY);
   };
 
-  const total = state.items.reduce(
-    (sum, item) => sum + item.priceInINR * item.qty,
-    0
-  );
+  const { subtotal, discountINR, discountRate, discountedSubtotal } = computeCartTotals(state.items);
+
+  const total = discountedSubtotal;
 
   return (
     <CartContext.Provider
-      value={{ items: state.items, addItem, removeItem, updateQty, clear, total }}
+      value={{ items: state.items, addItem, removeItem, updateQty, clear, subtotal, discountINR, discountRate, total }}
     >
       {children}
     </CartContext.Provider>

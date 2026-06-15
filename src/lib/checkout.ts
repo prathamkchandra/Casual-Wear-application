@@ -56,3 +56,20 @@ export const validateDeliveryAddress = (
 
   return null;
 };
+
+export type TotalsResult = {
+  subtotal: number;
+  totalQty: number;
+  discountRate: number;
+  discountINR: number;
+  discountedSubtotal: number;
+};
+
+export const computeCartTotals = (items: Array<{ priceInINR: number; qty: number }>): TotalsResult => {
+  const subtotal = items.reduce((s, it) => s + it.priceInINR * it.qty, 0);
+  const totalQty = items.reduce((s, it) => s + it.qty, 0);
+  const discountRate = totalQty > 2 ? 0.1 : 0;
+  const discountINR = Math.round(subtotal * discountRate);
+  const discountedSubtotal = subtotal - discountINR;
+  return { subtotal, totalQty, discountRate, discountINR, discountedSubtotal };
+};
